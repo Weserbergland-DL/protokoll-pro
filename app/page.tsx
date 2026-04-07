@@ -18,7 +18,7 @@ export default function Landing() {
     }
   }, [user, loading, router])
 
-  if (loading || user) return null
+  if (user) return null
 
   return (
     <div className="min-h-screen bg-white">
