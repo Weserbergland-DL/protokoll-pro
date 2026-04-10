@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, FileText, LogOut, Settings, Trash2, Bug } from 'lucide-react'
+import { Plus, FileText, LogOut, Settings, Trash2, ShieldCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
@@ -216,8 +216,8 @@ export default function Dashboard() {
             </Button>
             {isAdmin && (
               <div className="relative">
-                <Button variant="ghost" size="icon" title="Feedback & Fehler" onClick={() => router.push('/feedback')}>
-                  <Bug className="h-5 w-5" />
+                <Button variant="ghost" size="icon" title="Admin-Panel" onClick={() => router.push('/admin')}>
+                  <ShieldCheck className="h-5 w-5 text-primary" />
                 </Button>
                 {unresolvedFeedbackCount > 0 && (
                   <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
