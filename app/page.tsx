@@ -25,31 +25,33 @@ export default function Landing() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden px-6 py-24 text-center">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-white to-white" />
+        <section className="relative overflow-hidden px-6 py-24 sm:py-32 text-center">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-white" />
+          <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
           <div className="mx-auto max-w-3xl">
-            <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-              <ClipboardCheck className="h-3.5 w-3.5" /> 1. Protokoll kostenlos
+            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-semibold text-primary shadow-sm">
+              <ClipboardCheck className="h-3.5 w-3.5" /> 1. Protokoll kostenlos – kein Risiko
             </span>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl leading-tight">
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl leading-tight">
               Professionelle Übergabe&shy;protokolle –{' '}
               <span className="text-primary">in wenigen Minuten.</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 leading-relaxed">
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-500 leading-relaxed">
               Mängel fotografieren, Zählerstände erfassen, digital unterschreiben.
               Fertig als rechtssicheres PDF – direkt auf dem Smartphone.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link href="/login?mode=signup">
-                <Button size="lg" className="px-8">
+                <Button size="lg" className="px-8 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 transition-all">
                   Kostenlos starten
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button variant="ghost" size="lg">Preise ansehen</Button>
+                <Button variant="outline" size="lg" className="text-slate-600">Preise ansehen</Button>
               </Link>
             </div>
+            <p className="mt-4 text-xs text-slate-400">Keine Kreditkarte. Kein Abo. Sofort starten.</p>
           </div>
         </section>
 
@@ -80,33 +82,37 @@ export default function Landing() {
 
         {/* Features */}
         <section className="px-6 py-20">
-          <div className="mx-auto max-w-5xl grid gap-10 sm:grid-cols-3">
-            {[
-              { icon: Smartphone, title: 'Mobil optimiert', desc: 'Designed für die Nutzung vor Ort – ohne Laptop, ohne Papier.' },
-              { icon: ShieldCheck, title: 'Rechtssicher', desc: 'Digitale Signaturen und lückenlose Dokumentation für den Streitfall.' },
-              { icon: Zap, title: 'Sofort einsatzbereit', desc: 'Kein Download, kein Setup. Einfach anmelden und loslegen.' },
-            ].map((feature, i) => (
-              <div key={i} className="flex flex-col items-start">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
-                  <feature.icon className="h-6 w-6 text-slate-700" />
+          <div className="mx-auto max-w-5xl">
+            <h2 className="text-center text-3xl font-bold text-slate-900 mb-12">Alles, was Sie brauchen</h2>
+            <div className="grid gap-8 sm:grid-cols-3">
+              {[
+                { icon: Smartphone, title: 'Mobil optimiert', desc: 'Designed für die Nutzung vor Ort – ohne Laptop, ohne Papier.', color: 'bg-blue-50 text-blue-600' },
+                { icon: ShieldCheck, title: 'Rechtssicher', desc: 'Digitale Signaturen und lückenlose Dokumentation für den Streitfall.', color: 'bg-emerald-50 text-emerald-600' },
+                { icon: Zap, title: 'Sofort einsatzbereit', desc: 'Kein Download, kein Setup. Einfach anmelden und loslegen.', color: 'bg-amber-50 text-amber-600' },
+              ].map((feature, i) => (
+                <div key={i} className="flex flex-col items-start rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${feature.color}`}>
+                    <feature.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900">{feature.title}</h3>
+                  <p className="mt-1.5 text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{feature.title}</h3>
-                <p className="mt-1 text-slate-600 text-sm leading-relaxed">{feature.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* CTA Banner */}
-        <section className="bg-primary px-6 py-16 text-center text-white">
-          <h2 className="text-3xl font-bold">Ihr erstes Protokoll ist kostenlos.</h2>
-          <p className="mt-3 text-primary-foreground/80 max-w-md mx-auto">
-            Registrieren Sie sich jetzt und überzeugen Sie sich selbst – ohne Kreditkarte.
+        <section className="mx-6 mb-16 rounded-3xl bg-gradient-to-br from-primary to-blue-700 px-8 py-14 text-center text-white shadow-xl shadow-primary/20">
+          <h2 className="text-2xl sm:text-3xl font-bold">Ihr erstes Protokoll ist kostenlos.</h2>
+          <p className="mt-3 text-white/80 max-w-md mx-auto text-sm sm:text-base">
+            Registrieren Sie sich jetzt und überzeugen Sie sich selbst – ohne Kreditkarte, ohne Risiko.
           </p>
           <div className="mt-8">
             <Link href="/login?mode=signup">
-              <Button size="lg" variant="secondary" className="px-8">
+              <Button size="lg" variant="secondary" className="px-8 bg-white text-primary hover:bg-slate-50 shadow-sm font-semibold">
                 Jetzt kostenlos testen
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>

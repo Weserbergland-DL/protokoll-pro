@@ -71,12 +71,13 @@ export default function Pricing() {
             </CardFooter>
           </Card>
 
-          <Card className="flex flex-col border-primary shadow-lg relative">
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4">
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+          <div className="relative pt-4">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
+              <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-sm whitespace-nowrap">
                 <Zap className="h-3 w-3" /> Beliebt
               </span>
             </div>
+          <Card className="flex flex-col border-primary border-2 shadow-lg shadow-primary/10 h-full">
             <CardHeader>
               <CardTitle className="text-2xl">On-Demand</CardTitle>
               <CardDescription>Für Privatvermieter &amp; Gelegenheitsnutzer</CardDescription>
@@ -103,6 +104,7 @@ export default function Pricing() {
               </Button>
             </CardFooter>
           </Card>
+          </div>
 
           <Card className="flex flex-col">
             <CardHeader>

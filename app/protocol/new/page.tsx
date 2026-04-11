@@ -111,19 +111,53 @@ export default function NewProtocol() {
 
   if (!user) return null
 
+  const steps = [
+    { label: 'Art & Datum' },
+    { label: 'Mieter & Adresse' },
+  ]
+
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl">
-        <Button variant="ghost" className="mb-6" onClick={() => router.push('/dashboard')}>
+        <Button variant="ghost" className="mb-6 -ml-2" onClick={() => router.push('/dashboard')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Zurück zum Dashboard
+          Zurück
         </Button>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Neues Übergabeprotokoll</CardTitle>
+        {/* Step Indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center gap-0">
+            {steps.map((s, i) => (
+              <div key={i} className="flex items-center">
+                <div className="flex flex-col items-center">
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-all ${
+                    i + 1 < step ? 'bg-primary text-white' :
+                    i + 1 === step ? 'bg-primary text-white ring-4 ring-primary/20' :
+                    'bg-white text-slate-400 border-2 border-slate-200'
+                  }`}>
+                    {i + 1 < step ? (
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : i + 1}
+                  </div>
+                  <span className={`mt-1.5 text-xs font-medium whitespace-nowrap ${i + 1 === step ? 'text-primary' : 'text-slate-400'}`}>
+                    {s.label}
+                  </span>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className={`mb-4 h-0.5 w-16 sm:w-24 mx-2 transition-all ${i + 1 < step ? 'bg-primary' : 'bg-slate-200'}`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl">Neues Übergabeprotokoll</CardTitle>
             <CardDescription>
-              Schritt {step} von 2: Stammdaten erfassen
+              {step === 1 ? 'Art der Übergabe und Datum festlegen' : 'Mieterdaten und Adresse der Immobilie'}
             </CardDescription>
           </CardHeader>
           <CardContent>
