@@ -12,19 +12,19 @@ const PLANS = [
   {
     id: 'free',
     name: 'Gratis',
-    description: 'Zum Kennenlernen',
+    description: 'Zum Einstieg',
     price: '0 €',
     period: null,
     count: '1 Protokoll',
     perProtocol: null,
     savings: null,
     features: [
-      '1 Protokoll inklusive',
-      'PDF-Export',
-      'Digitale Signatur',
-      'Fotos & Zählerstände',
+      '1 Protokoll kostenlos',
+      'Vollständiger PDF-Export',
+      'Digitale Unterschriften beider Parteien',
+      'Fotos & Zählerstände erfassen',
     ],
-    cta: 'Kostenlos starten',
+    cta: 'Jetzt kostenlos starten',
     ctaVariant: 'outline' as const,
     href: '/login?mode=signup',
     priceKey: null,
@@ -33,21 +33,21 @@ const PLANS = [
   },
   {
     id: 'single',
-    name: 'Einzeln',
-    description: 'Ohne Abonnement',
+    name: 'Flex',
+    description: 'Ohne feste Bindung',
     price: '9,99 €',
     period: 'pro Protokoll',
     count: '1 Protokoll',
     perProtocol: null,
     savings: null,
     features: [
-      '1 Protokoll',
-      'PDF-Export',
-      'Digitale Signatur',
-      'Fotos & Zählerstände',
-      'Einmalzahlung',
+      '1 Protokoll nach Bedarf',
+      'Vollständiger PDF-Export',
+      'Digitale Unterschriften beider Parteien',
+      'Fotos & Zählerstände erfassen',
+      'Einmalzahlung – kein Abo',
     ],
-    cta: 'Kaufen',
+    cta: 'Protokoll kaufen',
     ctaVariant: 'outline' as const,
     href: null,
     priceKey: 'NEXT_PUBLIC_STRIPE_PRICE_ONDEMAND',
@@ -56,8 +56,8 @@ const PLANS = [
   },
   {
     id: '10pack',
-    name: '10er-Abo',
-    description: 'Monatliches Abonnement',
+    name: 'Standard',
+    description: 'Für Privatvermieter',
     price: '19,99 €',
     period: 'pro Monat',
     count: '10 Protokolle / Monat',
@@ -65,12 +65,12 @@ const PLANS = [
     savings: '80 %',
     features: [
       '10 Protokolle pro Monat',
-      'PDF-Export',
-      'Digitale Signatur',
-      'Fotos & Zählerstände',
+      'Vollständiger PDF-Export',
+      'Digitale Unterschriften beider Parteien',
+      'Fotos & Zählerstände erfassen',
       'Monatlich kündbar',
     ],
-    cta: 'Abo abschließen',
+    cta: 'Standard wählen',
     ctaVariant: 'default' as const,
     href: null,
     priceKey: 'NEXT_PUBLIC_STRIPE_PRICE_10PACK',
@@ -79,8 +79,8 @@ const PLANS = [
   },
   {
     id: '50pack',
-    name: '50er-Abo',
-    description: 'Monatliches Abonnement',
+    name: 'Pro',
+    description: 'Für Makler & Hausverwaltungen',
     price: '39,99 €',
     period: 'pro Monat',
     count: '50 Protokolle / Monat',
@@ -88,12 +88,12 @@ const PLANS = [
     savings: '92 %',
     features: [
       '50 Protokolle pro Monat',
-      'PDF-Export',
-      'Digitale Signatur',
-      'Fotos & Zählerstände',
+      'Vollständiger PDF-Export',
+      'Digitale Unterschriften beider Parteien',
+      'Fotos & Zählerstände erfassen',
       'Monatlich kündbar',
     ],
-    cta: 'Abo abschließen',
+    cta: 'Pro wählen',
     ctaVariant: 'outline' as const,
     href: null,
     priceKey: 'NEXT_PUBLIC_STRIPE_PRICE_50PACK',
@@ -137,10 +137,10 @@ export default function Pricing() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl mb-3">
-            Preisübersicht
+            Tarife & Preise
           </h1>
           <p className="text-base text-slate-500 max-w-xl mx-auto">
-            Ein kostenloses Testprotokoll, ein Einzelkauf oder ein monatliches Abonnement – je nach Bedarf.
+            Starten Sie kostenlos und wechseln Sie jederzeit zu einem passenderen Tarif — ohne Mindestlaufzeit.
           </p>
         </div>
 
@@ -228,23 +228,23 @@ export default function Pricing() {
         {/* Enterprise */}
         <div className="mt-6 max-w-5xl mx-auto rounded-2xl border border-slate-200 bg-slate-900 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-1">Mehr als 50 Protokolle pro Monat</p>
-            <h3 className="text-lg font-semibold text-white">Individuelles Angebot</h3>
-            <p className="text-slate-400 text-sm mt-1">
-              Für Hausverwaltungen und Immobilienbüros erstellen wir ein passendes Angebot.
+            <p className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-1">Mehr als 50 Protokolle pro Monat?</p>
+            <h3 className="text-lg font-semibold text-white">Individuell auf Anfrage</h3>
+            <p className="text-slate-400 text-sm mt-1 max-w-sm">
+              Für größere Hausverwaltungen, Immobilienbüros oder Teams schnüren wir ein passendes Paket.
             </p>
           </div>
           <a href="mailto:hallo@protokoll-pro.de" className="shrink-0">
-            <Button className="bg-white text-slate-900 hover:bg-slate-100 font-medium gap-2">
+            <Button className="bg-white text-slate-900 hover:bg-slate-100 font-medium gap-2 shadow-sm">
               <Mail className="h-4 w-4" />
-              Anfragen
+              Angebot anfragen
               <ArrowRight className="h-4 w-4" />
             </Button>
           </a>
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Alle Preise zzgl. gesetzl. MwSt. · Abonnements monatlich kündbar
+          Alle Preise zzgl. gesetzl. MwSt. · Abonnements monatlich kündbar · Keine automatische Verlängerung ohne Kündigung
         </p>
       </main>
     </div>
