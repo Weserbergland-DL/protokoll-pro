@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { Check, Mail, ArrowRight } from 'lucide-react'
+import { Check, Mail, ArrowRight, Heart } from 'lucide-react'
 import { toast } from 'sonner'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const PLANS = [
   {
@@ -104,6 +106,7 @@ const PLANS = [
 
 export default function Pricing() {
   const { user } = useAuth()
+  const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
   const handleSubscribe = async (priceKey: string, mode: 'payment' | 'subscription') => {
@@ -120,6 +123,7 @@ export default function Pricing() {
         body: JSON.stringify({ priceId, mode }),
       })
       const data = await response.json()
+      if (data.beta) { router.push('/beta'); return }
       if (data.error) throw new Error(data.error)
       if (data.url) window.location.href = data.url
     } catch (error: any) {
@@ -130,7 +134,7 @@ export default function Pricing() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header />
       <main className="container mx-auto px-4 py-16 max-w-6xl">
 
@@ -247,6 +251,7 @@ export default function Pricing() {
           Alle Preise zzgl. gesetzl. MwSt. · Abonnements monatlich kündbar · Keine automatische Verlängerung ohne Kündigung
         </p>
       </main>
+      <Footer />
     </div>
   )
 }

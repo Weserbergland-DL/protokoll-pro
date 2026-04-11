@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ClipboardCheck, ShieldCheck, Zap, Smartphone, Camera, FileSignature, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -21,7 +22,7 @@ export default function Landing() {
   if (user) return null
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
       <main>
         {/* Hero */}
@@ -118,6 +119,7 @@ export default function Landing() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   )
 }

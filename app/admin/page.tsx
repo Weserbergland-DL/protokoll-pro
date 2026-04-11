@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { ArrowLeft, Users, FileText, ShieldCheck, TrendingUp, Search, Trash2, Crown, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Users, FileText, ShieldCheck, TrendingUp, Search, Trash2, Crown, RefreshCw, FlaskConical, MessageSquare, Bug, Lightbulb } from 'lucide-react'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 
@@ -25,9 +25,29 @@ interface AdminUser {
   protocols_finalized: number
 }
 
+interface Feedback {
+  id: string
+  user_email: string | null
+  type: string
+  message: string
+  created_at: string
+}
+
 const safeFormat = (d: string | null | undefined, fmt: string) => {
   if (!d) return '—'
   try { return format(new Date(d), fmt, { locale: de }) } catch { return '—' }
+}
+
+const feedbackTypeIcon = (type: string) => {
+  if (type === 'bug') return <Bug className="h-3.5 w-3.5 text-red-500" />
+  if (type === 'idea') return <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+  return <MessageSquare className="h-3.5 w-3.5 text-blue-500" />
+}
+
+const feedbackTypeLabel = (type: string) => {
+  if (type === 'bug') return 'Fehler'
+  if (type === 'idea') return 'Idee'
+  return 'Feedback'
 }
 
 export default function AdminPage() {
@@ -38,6 +58,14 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  // Beta mode
+  const [betaMode, setBetaMode] = useState(false)
+  const [betaLoading, setBetaLoading] = useState(true)
+
+  // Feedback
+  const [feedback, setFeedback] = useState<Feedback[]>([])
+  const [loadingFeedback, setLoadingFeedback] = useState(true)
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) router.replace('/dashboard')
@@ -56,9 +84,52 @@ export default function AdminPage() {
     }
   }
 
+  const fetchSettings = async () => {
+    setBetaLoading(true)
+    try {
+      const res = await fetch('/api/admin/settings')
+      const data = await res.json()
+      setBetaMode(data.settings?.beta_mode === 'true')
+    } finally {
+      setBetaLoading(false)
+    }
+  }
+
+  const fetchFeedback = async () => {
+    setLoadingFeedback(true)
+    try {
+      const res = await fetch('/api/admin/feedback')
+      const data = await res.json()
+      if (data.feedback) setFeedback(data.feedback)
+    } finally {
+      setLoadingFeedback(false)
+    }
+  }
+
   useEffect(() => {
-    if (user && isAdmin) fetchUsers()
+    if (user && isAdmin) {
+      fetchUsers()
+      fetchSettings()
+      fetchFeedback()
+    }
   }, [user, isAdmin])
+
+  const toggleBetaMode = async () => {
+    const next = !betaMode
+    setBetaMode(next)
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'beta_mode', value: String(next) }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success(next ? 'Beta-Modus aktiviert – Zahlungen deaktiviert' : 'Beta-Modus deaktiviert – Zahlungen aktiv')
+    } catch {
+      setBetaMode(!next)
+      toast.error('Fehler beim Speichern')
+    }
+  }
 
   const updateUser = async (userId: string, updates: Record<string, string>) => {
     setActionLoading(userId)
@@ -123,13 +194,49 @@ export default function AdminPage() {
             <ShieldCheck className="h-5 w-5 text-primary" />
             <h1 className="text-base font-bold">Admin-Panel</h1>
           </div>
-          <Button variant="ghost" size="icon" className="ml-auto" onClick={fetchUsers} title="Aktualisieren">
+          <Button variant="ghost" size="icon" className="ml-auto" onClick={() => { fetchUsers(); fetchSettings(); fetchFeedback() }} title="Aktualisieren">
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
       <main className="mx-auto mt-6 max-w-6xl px-4 space-y-6">
+
+        {/* Beta-Modus Schalter */}
+        <Card className={betaMode ? 'border-amber-300 bg-amber-50' : ''}>
+          <CardContent className="pt-5 pb-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className={`rounded-lg p-2 ${betaMode ? 'bg-amber-100' : 'bg-slate-100'}`}>
+                  <FlaskConical className={`h-5 w-5 ${betaMode ? 'text-amber-600' : 'text-slate-500'}`} />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">Beta-Modus</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {betaMode
+                      ? 'Aktiv – Nutzer werden statt zu Stripe zur Beta-Feedback-Seite weitergeleitet'
+                      : 'Inaktiv – Zahlungen laufen normal über Stripe'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={toggleBetaMode}
+                disabled={betaLoading}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${betaMode ? 'bg-amber-500' : 'bg-slate-200'}`}
+                role="switch"
+                aria-checked={betaMode}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${betaMode ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            </div>
+            {betaMode && (
+              <p className="mt-3 text-xs text-amber-700 bg-amber-100 rounded-lg px-3 py-2">
+                ⚠️ Zahlungen sind aktuell deaktiviert. Alle Kaufversuche leiten zur Beta-Feedback-Seite weiter.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         {/* KPI-Kacheln */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card>
@@ -178,6 +285,42 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Beta-Feedback */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-slate-400" />
+              Beta-Feedback
+              {feedback.length > 0 && (
+                <span className="ml-1 text-xs bg-primary/10 text-primary font-semibold px-2 py-0.5 rounded-full">{feedback.length}</span>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {loadingFeedback ? (
+              <div className="flex justify-center py-8">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              </div>
+            ) : feedback.length === 0 ? (
+              <p className="px-4 py-8 text-center text-sm text-muted-foreground">Noch kein Feedback eingegangen</p>
+            ) : (
+              <div className="divide-y">
+                {feedback.map(f => (
+                  <div key={f.id} className="px-4 py-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      {feedbackTypeIcon(f.type)}
+                      <span className="text-xs font-medium text-slate-600">{feedbackTypeLabel(f.type)}</span>
+                      <span className="text-xs text-slate-400 ml-auto">{safeFormat(f.created_at, 'dd.MM.yy HH:mm')}</span>
+                    </div>
+                    <p className="text-sm text-slate-700 leading-relaxed">{f.message}</p>
+                    {f.user_email && <p className="text-xs text-slate-400 mt-1">{f.user_email}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Nutzertabelle */}
         <Card>
