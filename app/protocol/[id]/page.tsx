@@ -440,7 +440,7 @@ export default function ProtocolView() {
           windowWidth: 794, // A4 at 96dpi
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css'] },
+        pagebreak: { mode: ['css', 'legacy'] },
       }
 
       const pdfBlob: Blob = await html2pdf().set(opt).from(element as HTMLElement).outputPdf('blob')

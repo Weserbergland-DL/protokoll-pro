@@ -148,7 +148,7 @@ export const PrintableProtocol: React.FC<PrintableProtocolProps> = ({
                               <img
                                 src={url}
                                 alt={`Foto ${pIdx + 1}`}
-                                style={{ width: '100%', height: '55mm', objectFit: 'cover', display: 'block' }}
+                                style={{ width: '100%', height: 'auto', maxHeight: '70mm', objectFit: 'contain', display: 'block', backgroundColor: '#f8fafc' }}
                               />
                             </div>
                           ))}
@@ -168,7 +168,7 @@ export const PrintableProtocol: React.FC<PrintableProtocolProps> = ({
 
       {/* ── METERS ── */}
       {meters.length > 0 && (
-        <div style={{ marginBottom: '6mm', pageBreakInside: 'avoid' }}>
+        <div style={{ marginBottom: '6mm' }}>
           <h2 style={{ fontSize: '13pt', fontWeight: 700, color: '#1e293b', borderBottom: '1px solid #cbd5e1', paddingBottom: '2mm', marginBottom: '4mm', marginTop: 0 }}>
             Zählerstände
           </h2>
@@ -203,7 +203,7 @@ export const PrintableProtocol: React.FC<PrintableProtocolProps> = ({
                     <img
                       src={meter.photoUrl}
                       alt={`Zähler ${meter.type}`}
-                      style={{ width: '100%', height: '40mm', objectFit: 'cover', display: 'block' }}
+                      style={{ width: '100%', height: 'auto', maxHeight: '50mm', objectFit: 'contain', display: 'block', backgroundColor: '#f8fafc' }}
                     />
                   </div>
                 </div>
