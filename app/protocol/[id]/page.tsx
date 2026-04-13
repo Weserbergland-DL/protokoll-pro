@@ -104,7 +104,7 @@ export default function ProtocolView() {
   useEffect(() => {
     if (searchParams.get('finalized') === 'true' && protocol && !loading) {
       setActiveTab('finish')
-      setTimeout(() => generatePDF(), 500)
+      setTimeout(() => generatePDF(true), 500)
       // Query-Parameter entfernen
       router.replace(`/protocol/${id}`)
     }
@@ -298,9 +298,11 @@ export default function ProtocolView() {
       })
 
       if (res.ok) {
-        // Kostenloses oder Pro → direkt PDF generieren
+        // Kostenloses oder Pro → PDF generieren und in DB speichern
         setProtocol((prev: any) => ({ ...prev, finalized_at: new Date().toISOString(), status: 'final' }))
-        await generatePDF()
+        await generatePDF(true)
+        if (protocol.tenant_email) setIsEmailDialogOpen(true)
+        else router.push('/dashboard')
       } else {
         const data = await res.json()
         if (data.error === 'payment_required') {
@@ -327,16 +329,79 @@ export default function ProtocolView() {
     }
   }
 
-  const generatePDF = async () => {
+  // Convert any URL (incl. authenticated Supabase URLs) to base64 data URI
+  const urlToBase64 = async (url: string): Promise<string> => {
+    if (!url) return ''
+    try {
+      const res = await fetch(url)
+      if (!res.ok) return ''
+      const blob = await res.blob()
+      return await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = () => resolve('')
+        reader.readAsDataURL(blob)
+      })
+    } catch { return '' }
+  }
+
+  // Pre-convert all photos in protocol to base64 so html2canvas can render them
+  const prepareProtocolImages = async (p: any) => {
+    const copy = { ...p }
+    if (copy.rooms) {
+      copy.rooms = await Promise.all(copy.rooms.map(async (room: any) => ({
+        ...room,
+        defects: room.defects ? await Promise.all(room.defects.map(async (d: any) => ({
+          ...d,
+          photoUrls: d.photoUrls ? await Promise.all(d.photoUrls.map(urlToBase64)) : [],
+        }))) : [],
+      })))
+    }
+    if (copy.meters) {
+      copy.meters = await Promise.all(copy.meters.map(async (m: any) => ({
+        ...m,
+        photoUrl: m.photoUrl ? await urlToBase64(m.photoUrl) : '',
+      })))
+    }
+    if (copy.landlord_signature && !copy.landlord_signature.startsWith('data:')) {
+      copy.landlord_signature = await urlToBase64(copy.landlord_signature)
+    }
+    if (copy.tenant_signature && !copy.tenant_signature.startsWith('data:')) {
+      copy.tenant_signature = await urlToBase64(copy.tenant_signature)
+    }
+    return copy
+  }
+
+  const downloadStoredPDF = async () => {
+    if (!protocol?.pdf_url) return false
+    try {
+      const link = document.createElement('a')
+      link.href = protocol.pdf_url
+      link.download = `Protokoll_${protocol.tenant_first_name}_${protocol.tenant_last_name}.pdf`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      return true
+    } catch { return false }
+  }
+
+  const generatePDF = async (uploadAndStore = false) => {
+    // If PDF already stored, just download it
+    if (protocol?.pdf_url && !uploadAndStore) {
+      const ok = await downloadStoredPDF()
+      if (ok) return
+    }
+
     try {
       toast.loading('Generiere PDF... Bitte warten.', { id: 'pdf-gen' })
 
+      // Pre-fetch all images to base64 so they render correctly
+      toast.loading('Lade Bilder...', { id: 'pdf-gen' })
+      const preparedProtocol = await prepareProtocolImages(protocol)
+
       const container = document.createElement('div')
-      container.style.position = 'absolute'
-      container.style.left = '-9999px'
-      container.style.top = '0'
-      container.style.color = '#000000'
-      container.style.backgroundColor = '#ffffff'
+      container.style.cssText = 'position:absolute;left:-9999px;top:0;background:#fff;'
       document.body.appendChild(container)
 
       const { createRoot } = await import('react-dom/client')
@@ -345,67 +410,69 @@ export default function ProtocolView() {
       await new Promise<void>((resolve) => {
         root.render(
           <PrintableProtocol
-            protocol={protocol}
+            protocol={preparedProtocol}
             userName={userName}
             userCompany={userCompany}
             propertyAddress={propertyAddress}
           />
         )
-        setTimeout(resolve, 1500)
+        setTimeout(resolve, 800)
       })
 
       const element = container.querySelector('#pdf-content')
       if (!element) throw new Error('PDF container not found')
 
+      toast.loading('Erstelle PDF...', { id: 'pdf-gen' })
+
       const html2pdf = (await import('html2pdf.js')).default
+      const filename = `Protokoll_${protocol.tenant_first_name}_${protocol.tenant_last_name}.pdf`
 
       const opt: any = {
-        margin: [10, 10, 10, 10],
-        filename: `Protokoll_${protocol.tenant_first_name}_${protocol.tenant_last_name}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        margin: 0,
+        filename,
+        image: { type: 'jpeg', quality: 0.95 },
         html2canvas: {
           scale: 2,
           useCORS: true,
+          allowTaint: true,
           logging: false,
-          windowWidth: 720,
-          onclone: (clonedDoc: Document) => {
-            const externalStyles = clonedDoc.querySelectorAll('link[rel="stylesheet"], style:not(#pdf-content style)')
-            externalStyles.forEach(s => s.remove())
-            const elements = clonedDoc.querySelectorAll('*')
-            elements.forEach((el) => {
-              const htmlEl = el as HTMLElement
-              const inlineStyle = htmlEl.getAttribute('style') || ''
-              if (inlineStyle.includes('oklch')) {
-                htmlEl.setAttribute('style', inlineStyle.replace(/oklch\([^)]+\)/g, '#000000'))
-              }
-              const style = window.getComputedStyle(htmlEl)
-              ;['color', 'backgroundColor', 'borderColor', 'outlineColor', 'fill', 'stroke'].forEach((prop) => {
-                const val = style.getPropertyValue(prop)
-                if (val?.includes('oklch')) {
-                  htmlEl.style.setProperty(prop, prop === 'backgroundColor' ? 'transparent' : '#000000', 'important')
-                }
-              })
-            })
-          }
+          backgroundColor: '#ffffff',
+          windowWidth: 794, // A4 at 96dpi
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy', 'avoid'], avoid: ['.defect-container', '.pdf-grid-item', '.pdf-grid-3-item', '.signature-section'] }
+        pagebreak: { mode: ['avoid-all', 'css'] },
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500))
-      const pdfBlob = await html2pdf().set(opt).from(element as HTMLElement).outputPdf('blob')
+      const pdfBlob: Blob = await html2pdf().set(opt).from(element as HTMLElement).outputPdf('blob')
 
+      // Upload to Supabase and save URL on first finalization
+      if (uploadAndStore) {
+        try {
+          toast.loading('Speichere PDF...', { id: 'pdf-gen' })
+          const formData = new FormData()
+          formData.append('pdf', pdfBlob, filename)
+          formData.append('protocolId', id)
+          const res = await fetch('/api/protocol/save-pdf', { method: 'POST', body: formData })
+          const data = await res.json()
+          if (data.url) {
+            setProtocol((prev: any) => ({ ...prev, pdf_url: data.url }))
+          }
+        } catch (e) {
+          console.warn('PDF upload failed, falling back to local download', e)
+        }
+      }
+
+      // Open PDF for download
       const pdfUrl = URL.createObjectURL(pdfBlob)
-      window.open(pdfUrl, '_blank')
+      const link = document.createElement('a')
+      link.href = pdfUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000)
 
-      await saveProtocol({ status: 'final' })
-      toast.success('PDF generiert und Protokoll abgeschlossen', { id: 'pdf-gen' })
-
-      if (protocol.tenant_email) {
-        setIsEmailDialogOpen(true)
-      } else {
-        router.push('/dashboard')
-      }
+      toast.success('PDF erfolgreich heruntergeladen', { id: 'pdf-gen' })
 
       setTimeout(() => {
         root.unmount()
@@ -853,9 +920,9 @@ export default function ProtocolView() {
                       <p className="text-xs text-muted-foreground">
                         Abgeschlossen am {new Date(protocol.finalized_at).toLocaleDateString('de-DE')}
                       </p>
-                      <Button variant="outline" className="w-full" onClick={generatePDF}>
+                      <Button variant="outline" className="w-full" onClick={() => generatePDF(false)}>
                         <FileText className="mr-2 h-5 w-5" />
-                        PDF erneut herunterladen
+                        PDF herunterladen
                       </Button>
                     </div>
                   ) : (
