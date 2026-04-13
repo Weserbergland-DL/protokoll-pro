@@ -48,12 +48,21 @@ interface TenancyGroup {
   auszug?: Protocol
 }
 
+// Sorted by chronological need in a tenancy lifecycle
 const DOC_TYPES = [
-  { type: 'wohnungsgeberbestaetigung', label: 'Wohnungsgeberbestätigung', icon: Home },
-  { type: 'kautionsbescheinigung', label: 'Kautionsbescheinigung', icon: Key },
-  { type: 'mietvertrag', label: 'Mietvertrag', icon: FileSignature },
-  { type: 'sonstiges', label: 'Eigenes Dokument', icon: FilePen },
+  { type: 'mietvertrag', label: 'Mietvertrag', icon: FileSignature, hint: 'Vor Einzug' },
+  { type: 'wohnungsgeberbestaetigung', label: 'Wohnungsgeberbestätigung', icon: Home, hint: 'Bei Einzug' },
+  { type: 'kautionsbescheinigung', label: 'Kautionsbescheinigung', icon: Key, hint: 'Nach Kautionszahlung' },
+  { type: 'sonstiges', label: 'Eigenes Dokument', icon: FilePen, hint: '' },
 ]
+
+// Priority order for sorting displayed documents
+const DOC_TYPE_ORDER: Record<string, number> = {
+  mietvertrag: 1,
+  wohnungsgeberbestaetigung: 2,
+  kautionsbescheinigung: 3,
+  sonstiges: 4,
+}
 
 const safeFormatDate = (dateStr: string | null) => {
   if (!dateStr) return 'Kein Datum'
@@ -227,7 +236,9 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
         {/* Documents */}
         {docsLoaded && documents.length > 0 && (
           <div className="border-t border-slate-100 pt-2 space-y-1">
-            {documents.map(doc => (
+            {[...documents]
+              .sort((a, b) => (DOC_TYPE_ORDER[a.type] ?? 99) - (DOC_TYPE_ORDER[b.type] ?? 99))
+              .map(doc => (
               <button key={doc.id}
                 className="flex items-center justify-between w-full rounded-md px-3 py-1.5 hover:bg-slate-50 transition-colors text-left"
                 onClick={() => router.push(`/documents/${doc.id}`)}>
@@ -255,11 +266,14 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
 
           {showDocMenu && (
             <div className="absolute bottom-full mb-1 left-0 right-0 bg-white rounded-lg border border-slate-200 shadow-lg z-10 overflow-hidden">
-              {DOC_TYPES.map(({ type, label, icon: Icon }) => (
+              {DOC_TYPES.map(({ type, label, icon: Icon, hint }) => (
                 <button key={type} onClick={() => createDocument(type)}
-                  className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm hover:bg-slate-50 transition-colors text-left">
-                  <Icon className="h-4 w-4 text-primary" />
-                  {label}
+                  className="flex items-center gap-2.5 w-full px-3 py-2.5 hover:bg-slate-50 transition-colors text-left">
+                  <Icon className="h-4 w-4 text-primary shrink-0" />
+                  <span className="flex-1">
+                    <span className="text-sm text-slate-800 block">{label}</span>
+                    {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
+                  </span>
                 </button>
               ))}
             </div>
