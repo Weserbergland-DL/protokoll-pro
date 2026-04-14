@@ -11,8 +11,9 @@ import { DocumentEditor } from '@/components/DocumentEditor'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Save, Download, CheckCircle2, FileText,
-  Tag, Trash2, AlertCircle, Lock, X,
+  Tag, Trash2, AlertCircle, Lock, X, BookmarkPlus,
 } from 'lucide-react'
+import { Label } from '@/components/ui/label'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { PLACEHOLDER_LABELS } from '@/lib/document-templates'
@@ -37,6 +38,9 @@ export default function DocumentPage() {
   const [isDirty, setIsDirty] = useState(false)
   const [showPlaceholders, setShowPlaceholders] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [saveTplOpen, setSaveTplOpen] = useState(false)
+  const [tplName, setTplName] = useState('')
+  const [savingTpl, setSavingTpl] = useState(false)
 
   useEffect(() => {
     if (!user) { router.replace('/login'); return }
@@ -104,13 +108,20 @@ export default function DocumentPage() {
 
       const style = document.createElement('style')
       style.textContent = `
-        h1 { font-family: "Instrument Serif", Georgia, serif; font-size: 22pt; font-weight: 400; margin: 0 0 4mm 0; color: #1c1917; }
-        h2 { font-size: 13pt; font-weight: 600; margin: 6mm 0 2mm 0; border-bottom: 1px solid #e7e5e4; padding-bottom: 1mm; color: #1c1917; }
+        h1 { font-family: "Instrument Serif", Georgia, serif; font-size: 22pt; font-weight: 400; margin: 0 0 5mm 0; color: #1c1917; letter-spacing: -0.01em; }
+        h2 { font-size: 12pt; font-weight: 600; margin: 7mm 0 2.5mm 0; border-bottom: 1px solid #e7e5e4; padding-bottom: 1.5mm; color: #1c1917; letter-spacing: 0.01em; }
+        h3 { font-size: 11pt; font-weight: 600; margin: 5mm 0 2mm 0; color: #1c1917; }
         p { margin: 0 0 3mm 0; }
-        hr { border: none; border-top: 1px solid #e7e5e4; margin: 4mm 0; }
-        strong { font-weight: 600; }
-        em { color: #78716c; font-size: 9pt; font-style: italic; }
-        ul, ol { margin: 0 0 3mm 4mm; }
+        hr { border: none; border-top: 1px solid #e7e5e4; margin: 5mm 0; }
+        strong { font-weight: 600; color: #1c1917; }
+        em { color: #78716c; font-style: italic; }
+        ul, ol { margin: 0 0 3mm 5mm; padding: 0; }
+        li { margin: 0 0 1.5mm 0; }
+        table { width: 100%; border-collapse: collapse; margin: 3mm 0; page-break-inside: avoid; }
+        td { padding: 1.5mm 0; vertical-align: top; }
+        div[style*="background"] { page-break-inside: avoid; border-radius: 1mm; }
+        /* Prevent orphaned signatures */
+        table[style*="margin-top:48px"] { page-break-inside: avoid; margin-top: 15mm !important; }
       `
       container.prepend(style)
       document.body.appendChild(container)
@@ -128,6 +139,27 @@ export default function DocumentPage() {
       toast.success('PDF heruntergeladen', { id: 'doc-pdf' })
     } catch {
       toast.error('Fehler beim Erstellen der PDF', { id: 'doc-pdf' })
+    }
+  }
+
+  const saveAsTemplate = async () => {
+    if (!tplName.trim()) { toast.error('Bitte Namen angeben'); return }
+    setSavingTpl(true)
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: tplName.trim(), type: doc.type, content }),
+      })
+      const { template, error } = await res.json()
+      if (error || !template) { toast.error('Fehler: ' + (error || 'Unbekannt')); setSavingTpl(false); return }
+      toast.success(`Vorlage "${template.name}" gespeichert`)
+      setSaveTplOpen(false)
+      setTplName('')
+    } catch {
+      toast.error('Fehler beim Speichern der Vorlage')
+    } finally {
+      setSavingTpl(false)
     }
   }
 
@@ -190,6 +222,15 @@ export default function DocumentPage() {
                   title="Platzhalter"
                 >
                   <Tag className="h-4 w-4" />
+                </Button>
+                {/* Als Vorlage speichern */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => { setTplName(`Meine ${TYPE_LABELS[doc?.type] || 'Vorlage'}`); setSaveTplOpen(true) }}
+                  title="Als eigene Vorlage speichern"
+                >
+                  <BookmarkPlus className="h-4 w-4" />
                 </Button>
                 {/* Save: icon-only on mobile */}
                 <Button variant="outline" size="icon" onClick={() => save()} disabled={saving || !isDirty} title="Speichern">
@@ -325,6 +366,39 @@ export default function DocumentPage() {
           )}
         </div>
       </main>
+
+      {/* Save as Template Dialog */}
+      <Dialog open={saveTplOpen} onOpenChange={setSaveTplOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookmarkPlus className="h-4 w-4 text-brass-600" />
+              Als eigene Vorlage speichern
+            </DialogTitle>
+            <DialogDescription>
+              Der aktuelle Inhalt wird als wiederverwendbare Vorlage gespeichert. Platzhalter wie <code className="text-[11px] bg-muted px-1 rounded">{'{{mieter_name}}'}</code> bleiben erhalten und werden beim nächsten Einsatz automatisch ausgefüllt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="tpl-name" className="text-xs">Name der Vorlage</Label>
+            <Input
+              id="tpl-name"
+              value={tplName}
+              onChange={e => setTplName(e.target.value)}
+              placeholder="z.B. Standard-WG-Mietvertrag"
+              autoFocus
+              onKeyDown={e => { if (e.key === 'Enter' && !savingTpl) saveAsTemplate() }}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveTplOpen(false)} disabled={savingTpl}>Abbrechen</Button>
+            <Button onClick={saveAsTemplate} disabled={savingTpl || !tplName.trim()} className="gap-1.5">
+              <BookmarkPlus className="h-4 w-4" />
+              {savingTpl ? 'Speichert…' : 'Speichern'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>

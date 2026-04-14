@@ -29,8 +29,17 @@ export const PLACEHOLDER_LABELS: Record<string, string> = {
   '{{einzugsdatum}}':       'Einzugsdatum',
   '{{datum_heute}}':        'Heutiges Datum',
   '{{kaltmiete}}':          'Kaltmiete (€)',
+  '{{nebenkosten}}':        'Nebenkosten (€)',
+  '{{gesamtmiete}}':        'Gesamtmiete (€)',
   '{{kaution}}':            'Kautionsbetrag (€)',
   '{{mietbeginn}}':         'Mietbeginn',
+  '{{wohnflaeche}}':        'Wohnfläche (m²)',
+  '{{zimmer}}':             'Anzahl Zimmer',
+  '{{stockwerk}}':          'Stockwerk / Lage',
+  '{{vertragsart}}':        'Vertragsart',
+  '{{vertragsende}}':       'Vertragsende',
+  '{{kuendigungsfrist}}':   'Kündigungsfrist',
+  '{{faelligkeitstag}}':    'Fälligkeitstag Miete',
 }
 
 export function fillPlaceholders(content: string, data: Record<string, string>): string {
@@ -109,62 +118,107 @@ Unterschrift Vermieter<br>
   },
 
   mietvertrag: {
-    name: 'Mietvertrag (Vorlage)',
+    name: 'Mietvertrag',
     type: 'mietvertrag' as const,
-    content: `<h1>Mietvertrag</h1>
-<p><em>⚠️ Hinweis: Dies ist eine vereinfachte Vorlage. Bitte lassen Sie diesen Vertrag vor der Unterzeichnung rechtlich prüfen.</em></p>
-<hr>
+    content: `<h1>Mietvertrag über Wohnraum</h1>
 
-<h2>§ 1 Vertragsparteien</h2>
-<p><strong>Vermieter:</strong><br>
-{{vermieter_name}}<br>
-{{vermieter_firma}}<br>
+<div style="background:#FFF9E6;border-left:3px solid #C89F3E;padding:10px 14px;margin:16px 0;font-size:0.9em;">
+<strong>Hinweis:</strong> Diese Vorlage entspricht gängigen Standards für Wohnraummietverträge. Bitte vor der Unterzeichnung individuell prüfen — insb. Schönheitsreparaturen- und Kündigungsklauseln unterliegen strenger Rechtsprechung.
+</div>
+
+<h2>Zwischen</h2>
+<p><strong>{{vermieter_name}}</strong>{{vermieter_firma_block}}<br>
 {{vermieter_adresse}}<br>
-Telefon: {{vermieter_telefon}}<br>
-E-Mail: {{vermieter_email}}</p>
-<p><strong>Mieter:</strong><br>
-{{mieter_anrede}} {{mieter_vorname}} {{mieter_nachname}}<br>
+Telefon: {{vermieter_telefon}} &nbsp;·&nbsp; E-Mail: {{vermieter_email}}</p>
+<p style="text-align:center;"><em>— nachstehend "Vermieter" genannt —</em></p>
+
+<h2>und</h2>
+<p><strong>{{mieter_anrede}} {{mieter_vorname}} {{mieter_nachname}}</strong><br>
 {{mieter_adresse}}</p>
+<p style="text-align:center;"><em>— nachstehend "Mieter" genannt —</em></p>
 
-<h2>§ 2 Mietobjekt</h2>
-<p>Vermietet wird die Wohnung in: <strong>{{adresse}}</strong></p>
-
-<h2>§ 3 Mietdauer</h2>
-<p>Das Mietverhältnis beginnt am <strong>{{mietbeginn}}</strong> und wird auf unbestimmte Zeit geschlossen.</p>
-
-<h2>§ 4 Miete und Zahlungsmodalitäten</h2>
-<p>Die monatliche Kaltmiete beträgt: <strong>{{kaltmiete}} Euro</strong><br>
-Zuzüglich Betriebskostenvorauszahlung: ________ Euro<br>
-<strong>Gesamtmiete: ________ Euro</strong></p>
-<p>Die Miete ist monatlich im Voraus, spätestens am 3. Werktag eines jeden Monats zu überweisen auf:</p>
-<p>Kontoinhaber: {{vermieter_name}}<br>
-IBAN: {{vermieter_iban}}<br>
-Bank: {{vermieter_bank}}</p>
-
-<h2>§ 5 Kaution</h2>
-<p>Der Mieter hinterlegt eine Kaution von <strong>{{kaution}} Euro</strong>. Die Kaution ist zu Beginn des Mietverhältnisses zu zahlen auf:</p>
-<p>Kontoinhaber: {{vermieter_name}}<br>
-IBAN: {{vermieter_iban}}<br>
-Bank: {{vermieter_bank}}</p>
-
-<h2>§ 6 Schönheitsreparaturen</h2>
-<p>Der Mieter ist nicht verpflichtet, während der Mietzeit Schönheitsreparaturen durchzuführen.</p>
-
-<h2>§ 7 Kündigung</h2>
-<p>Das Mietverhältnis kann von beiden Seiten mit einer Frist von 3 Monaten zum Monatsende gekündigt werden.</p>
-
-<h2>§ 8 Hausordnung</h2>
-<p>Der Mieter verpflichtet sich, die beigefügte Hausordnung einzuhalten.</p>
-
-<h2>§ 9 Sonstiges</h2>
-<p>_________________________________________________</p>
-<p>_________________________________________________</p>
+<p>wird folgender Mietvertrag geschlossen:</p>
 
 <hr>
-<p>Ort, Datum: _________________________, {{datum_heute}}</p>
-<br>
-<p>_________________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_________________________________<br>
-Unterschrift Vermieter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unterschrift Mieter<br>
-{{vermieter_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{mieter_name}}</p>`,
+
+<h2>§ 1 &nbsp; Mietobjekt</h2>
+<p>Vermietet wird die Wohnung in:</p>
+<p style="margin-left:24px;"><strong>{{adresse}}</strong>{{lage_block}}</p>
+<p>Die Wohnung besteht aus <strong>{{zimmer}} Zimmer(n)</strong> mit einer Wohnfläche von ca. <strong>{{wohnflaeche}} m²</strong>, nebst Küche, Bad/WC, Flur sowie den mitvermieteten Nebenräumen.</p>
+
+<h2>§ 2 &nbsp; Mietzeit</h2>
+<p>Das Mietverhältnis beginnt am <strong>{{mietbeginn}}</strong>{{vertragsdauer_block}}</p>
+
+<h2>§ 3 &nbsp; Miete und Nebenkosten</h2>
+<table style="width:100%;border-collapse:collapse;margin:12px 0;">
+<tbody>
+<tr><td style="padding:6px 0;">Grundmiete (kalt)</td><td style="padding:6px 0;text-align:right;"><strong>{{kaltmiete}} €</strong></td></tr>
+<tr><td style="padding:6px 0;">Vorauszahlung für Betriebs- und Heizkosten</td><td style="padding:6px 0;text-align:right;"><strong>{{nebenkosten}} €</strong></td></tr>
+<tr><td style="padding:6px 0;border-top:1px solid #E6E6E6;"><strong>Gesamtmiete monatlich</strong></td><td style="padding:6px 0;text-align:right;border-top:1px solid #E6E6E6;"><strong>{{gesamtmiete}} €</strong></td></tr>
+</tbody>
+</table>
+<p>Die Miete ist monatlich im Voraus, spätestens am <strong>{{faelligkeitstag}}. Werktag</strong> eines jeden Monats, kostenfrei für den Vermieter auf folgendes Konto zu zahlen:</p>
+<p style="margin-left:24px;">Kontoinhaber: <strong>{{vermieter_name}}</strong><br>
+IBAN: {{vermieter_iban}}<br>
+Bank: {{vermieter_bank}}</p>
+<p>Die Betriebskostenvorauszahlung wird jährlich abgerechnet (§§ 556 ff. BGB).</p>
+
+<h2>§ 4 &nbsp; Kaution</h2>
+<p>Der Mieter leistet zur Sicherung aller Ansprüche des Vermieters eine Barkaution in Höhe von <strong>{{kaution}} €</strong>.</p>
+<p>Die Kaution ist gemäß § 551 BGB in drei gleichen Raten zulässig; die erste Rate wird zu Mietbeginn fällig. Der Vermieter legt die Kaution insolvenzsicher und getrennt von seinem Vermögen zu einem für Spareinlagen üblichen Zinssatz an. Zinsen stehen dem Mieter zu.</p>
+
+<h2>§ 5 &nbsp; Übergabe und Zustand der Mietsache</h2>
+<p>Die Wohnung wird im beiderseits besichtigten Zustand übergeben. Über den Zustand zum Zeitpunkt der Übergabe wird ein gesondertes <strong>Übergabeprotokoll</strong> angefertigt, das Bestandteil dieses Vertrages ist.</p>
+
+<h2>§ 6 &nbsp; Nutzung der Mietsache</h2>
+<p>(1) Die Wohnung darf ausschließlich zu Wohnzwecken genutzt werden. Eine gewerbliche oder freiberufliche Nutzung bedarf der schriftlichen Zustimmung des Vermieters.</p>
+<p>(2) Die Untervermietung oder sonstige Gebrauchsüberlassung an Dritte bedarf der vorherigen schriftlichen Zustimmung des Vermieters. Auf § 553 BGB wird hingewiesen.</p>
+<p>(3) Die Tierhaltung richtet sich nach den gesetzlichen Bestimmungen; die Haltung größerer Tiere (insb. Hunde, Katzen) bedarf der schriftlichen Zustimmung des Vermieters.</p>
+
+<h2>§ 7 &nbsp; Instandhaltung, Schönheitsreparaturen</h2>
+<p>(1) Der Mieter verpflichtet sich, die Mietsache pfleglich zu behandeln und kleine Instandhaltungen bis zu einer Höhe von 100 € je Einzelfall, höchstens jedoch 8 % der Jahreskaltmiete, zu übernehmen.</p>
+<p>(2) Schönheitsreparaturen während der Mietzeit werden nicht übertragen. Maßgeblich ist die aktuelle Rechtsprechung des BGH.</p>
+
+<h2>§ 8 &nbsp; Kündigung</h2>
+<p>(1) Das Mietverhältnis kann unter Einhaltung der gesetzlichen Kündigungsfristen (§ 573c BGB) ordentlich gekündigt werden. Für den Mieter beträgt die Kündigungsfrist <strong>{{kuendigungsfrist}}</strong>.</p>
+<p>(2) Die Kündigung bedarf der Schriftform.</p>
+<p>(3) Das Recht zur außerordentlichen Kündigung bleibt unberührt.</p>
+
+<h2>§ 9 &nbsp; Hausordnung</h2>
+<p>Der Mieter verpflichtet sich, die Hausordnung einzuhalten, soweit sie diesem Vertrag beigefügt oder im Hause ausgehängt ist. Rücksichtnahme auf Mitbewohner, insbesondere während der gesetzlichen Ruhezeiten, ist selbstverständlich.</p>
+
+<h2>§ 10 &nbsp; Sonstige Vereinbarungen</h2>
+<p style="color:#888;"><em>Platz für individuelle Abreden:</em></p>
+<p>_________________________________________________________________</p>
+<p>_________________________________________________________________</p>
+<p>_________________________________________________________________</p>
+
+<h2>§ 11 &nbsp; Schlussbestimmungen</h2>
+<p>(1) Mündliche Nebenabreden wurden nicht getroffen. Änderungen und Ergänzungen dieses Vertrages bedürfen der Schriftform.</p>
+<p>(2) Sollte eine Bestimmung dieses Vertrages ganz oder teilweise unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. An die Stelle der unwirksamen Bestimmung tritt die gesetzliche Regelung.</p>
+<p>(3) Gerichtsstand ist der Sitz der Mietsache.</p>
+
+<hr>
+
+<p style="margin-top:24px;">Ort, Datum: _________________________, {{datum_heute}}</p>
+
+<table style="width:100%;margin-top:48px;border-collapse:collapse;">
+<tbody>
+<tr>
+<td style="width:50%;padding:0 12px 0 0;vertical-align:top;">
+<p style="border-top:1px solid #222;padding-top:6px;margin-top:40px;">
+<strong>Vermieter</strong><br>
+<span style="color:#666;">{{vermieter_name}}</span>
+</p>
+</td>
+<td style="width:50%;padding:0 0 0 12px;vertical-align:top;">
+<p style="border-top:1px solid #222;padding-top:6px;margin-top:40px;">
+<strong>Mieter</strong><br>
+<span style="color:#666;">{{mieter_name}}</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>`,
   },
 }

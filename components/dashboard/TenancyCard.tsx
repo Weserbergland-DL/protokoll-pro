@@ -15,6 +15,7 @@ import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import { RentalContractDialog } from '@/components/documents/RentalContractDialog'
 
 interface Protocol {
   id: string
@@ -101,6 +102,7 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
   const [docsLoaded, setDocsLoaded] = useState(false)
   const [creatingDoc, setCreatingDoc] = useState(false)
   const [docToDelete, setDocToDelete] = useState<Document | null>(null)
+  const [showRentalDialog, setShowRentalDialog] = useState(false)
   const docMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -135,8 +137,18 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
   }
 
   const createDocument = async (type: string) => {
-    setCreatingDoc(true)
     setShowDocMenu(false)
+    // Mietvertrag opens a pre-fill dialog first
+    if (type === 'mietvertrag') {
+      const tenancyId = group.tenancyId || group.einzug?.id
+      if (!tenancyId) {
+        toast.error('Bitte zuerst Einzugsprotokoll anlegen')
+        return
+      }
+      setShowRentalDialog(true)
+      return
+    }
+    setCreatingDoc(true)
     const res = await fetch('/api/documents', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -366,6 +378,13 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
           </div>
         )}
       </div>
+
+      <RentalContractDialog
+        open={showRentalDialog}
+        onOpenChange={setShowRentalDialog}
+        tenancyId={group.tenancyId || group.einzug?.id || ''}
+        propertyId={group.propertyId || group.einzug?.property_id}
+      />
 
       <Dialog open={!!docToDelete} onOpenChange={(open) => !open && setDocToDelete(null)}>
         <DialogContent onClick={(e) => e.stopPropagation()}>

@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/client'
+import { RentalContractDialog } from '@/components/documents/RentalContractDialog'
 
 interface TenancyItem {
   id: string
@@ -75,6 +76,7 @@ export default function TenancyPage() {
   const [creating, setCreating] = useState<string | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [rentalDialogOpen, setRentalDialogOpen] = useState(false)
 
   useEffect(() => {
     if (!user) { router.replace('/login'); return }
@@ -132,6 +134,11 @@ export default function TenancyPage() {
   }
 
   const createItem = async (type: string) => {
+    // Mietvertrag opens pre-fill dialog
+    if (type === 'mietvertrag') {
+      setRentalDialogOpen(true)
+      return
+    }
     setCreating(type)
     const cfg = ITEM_CONFIG[type]
 
@@ -481,6 +488,13 @@ export default function TenancyPage() {
           </div>
         </section>
       </main>
+
+      <RentalContractDialog
+        open={rentalDialogOpen}
+        onOpenChange={setRentalDialogOpen}
+        tenancyId={id as string}
+        propertyId={tenancy?.property_id}
+      />
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>

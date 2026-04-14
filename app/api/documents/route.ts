@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const { type, tenancy_id, protocol_id, property_id, name } = body
+  const { type, tenancy_id, protocol_id, property_id, name, rental_terms, template_id } = body
 
   // Get user profile for placeholders
   const { data: profile } = await supabaseAdmin
@@ -50,6 +50,24 @@ export async function POST(request: NextRequest) {
   // Get tenancy/protocol data for placeholder filling
   let tenancyData: any = null
   let propertyData: any = null
+
+  // If rental_terms provided with a tenancy_id, persist them first so future docs can reuse
+  if (tenancy_id && rental_terms && typeof rental_terms === 'object') {
+    const allowed = [
+      'rent_cold', 'utilities', 'deposit', 'sqm', 'rooms', 'floor',
+      'contract_duration', 'contract_end_date', 'notice_period_months',
+      'rent_due_day', 'start_date',
+    ] as const
+    const update: Record<string, any> = {}
+    for (const key of allowed) {
+      if (rental_terms[key] !== undefined && rental_terms[key] !== null && rental_terms[key] !== '') {
+        update[key] = rental_terms[key]
+      }
+    }
+    if (Object.keys(update).length > 0) {
+      await supabaseAdmin.from('tenancies').update(update).eq('id', tenancy_id).eq('owner_id', user.id)
+    }
+  }
 
   if (tenancy_id) {
     const { data: ten } = await supabaseAdmin
@@ -80,9 +98,30 @@ export async function POST(request: NextRequest) {
   const landlordPlzOrt = profile ? `${profile.zip_code || ''} ${profile.city || ''}`.trim() : ''
   const landlordAddress = landlordStreet && landlordPlzOrt ? `${landlordStreet}, ${landlordPlzOrt}` : (landlordStreet || landlordPlzOrt)
 
+  const fmtMoney = (v: any) =>
+    v === null || v === undefined || v === '' ? ''
+      : new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(v))
+
+  const rentCold  = tenancyData?.rent_cold !== null && tenancyData?.rent_cold !== undefined ? Number(tenancyData.rent_cold) : null
+  const utilities = tenancyData?.utilities !== null && tenancyData?.utilities !== undefined ? Number(tenancyData.utilities) : null
+  const totalRent = rentCold !== null || utilities !== null ? (rentCold ?? 0) + (utilities ?? 0) : null
+
+  const noticeMonths = tenancyData?.notice_period_months ?? 3
+  const kuendigungsfrist = `${noticeMonths} Monate zum Monatsende`
+
+  const duration = tenancyData?.contract_duration || 'unbefristet'
+  const vertragsart = duration === 'befristet' ? 'Befristetes Mietverhältnis' : 'Unbefristetes Mietverhältnis'
+  const vertragsdauerBlock = duration === 'befristet' && tenancyData?.contract_end_date
+    ? ` und endet am <strong>${format(new Date(tenancyData.contract_end_date), 'dd.MM.yyyy', { locale: de })}</strong> (befristetes Mietverhältnis gemäß § 575 BGB).`
+    : ' und wird auf unbestimmte Zeit geschlossen.'
+
+  const lageBlock = tenancyData?.floor ? `, gelegen im ${tenancyData.floor}` : ''
+  const vermieterFirmaBlock = profile?.company ? `, ${profile.company}` : ''
+
   const placeholders: Record<string, string> = {
     '{{vermieter_name}}':    profile?.name || '',
     '{{vermieter_firma}}':   profile?.company || '',
+    '{{vermieter_firma_block}}': vermieterFirmaBlock,
     '{{vermieter_adresse}}': landlordAddress,
     '{{vermieter_strasse}}': landlordStreet,
     '{{vermieter_plz_ort}}': landlordPlzOrt,
@@ -105,8 +144,19 @@ export async function POST(request: NextRequest) {
     '{{einzugsdatum}}': tenancyData?.start_date ? format(new Date(tenancyData.start_date), 'dd.MM.yyyy', { locale: de }) : (tenancyData?.date ? format(new Date(tenancyData.date), 'dd.MM.yyyy', { locale: de }) : ''),
     '{{datum_heute}}': format(new Date(), 'dd.MM.yyyy', { locale: de }),
     '{{mietbeginn}}': tenancyData?.start_date ? format(new Date(tenancyData.start_date), 'dd.MM.yyyy', { locale: de }) : '',
-    '{{kaltmiete}}': '',
-    '{{kaution}}': '',
+    '{{kaltmiete}}': fmtMoney(rentCold),
+    '{{nebenkosten}}': fmtMoney(utilities),
+    '{{gesamtmiete}}': fmtMoney(totalRent),
+    '{{kaution}}': fmtMoney(tenancyData?.deposit),
+    '{{wohnflaeche}}': tenancyData?.sqm ? String(tenancyData.sqm).replace('.', ',') : '____',
+    '{{zimmer}}': tenancyData?.rooms ? String(tenancyData.rooms).replace('.', ',') : '___',
+    '{{stockwerk}}': tenancyData?.floor || '',
+    '{{vertragsart}}': vertragsart,
+    '{{vertragsende}}': tenancyData?.contract_end_date ? format(new Date(tenancyData.contract_end_date), 'dd.MM.yyyy', { locale: de }) : '',
+    '{{kuendigungsfrist}}': kuendigungsfrist,
+    '{{faelligkeitstag}}': String(tenancyData?.rent_due_day ?? 3),
+    '{{vertragsdauer_block}}': vertragsdauerBlock,
+    '{{lage_block}}': lageBlock,
   }
 
   // Validate type
@@ -115,13 +165,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Ungültiger Dokumenttyp' }, { status: 400 })
   }
 
-  // Get template content
+  // Get template content — prefer custom template if template_id is provided
+  let rawContent: string
+  let effectiveName: string
   const templateKey = type as keyof typeof DEFAULT_TEMPLATES
-  const templateDef = DEFAULT_TEMPLATES[templateKey]
-  const rawContent = templateDef?.content || ''
-  const filledContent = fillPlaceholders(rawContent, placeholders)
+  const defaultTemplateDef = DEFAULT_TEMPLATES[templateKey]
 
-  const docName = name || templateDef?.name || 'Neues Dokument'
+  if (template_id) {
+    const { data: customTpl } = await supabaseAdmin
+      .from('document_templates')
+      .select('name, content, type')
+      .eq('id', template_id)
+      .eq('owner_id', user.id)
+      .single()
+    if (!customTpl) return NextResponse.json({ error: 'Vorlage nicht gefunden' }, { status: 404 })
+    if (customTpl.type !== type) return NextResponse.json({ error: 'Vorlage passt nicht zum Dokumenttyp' }, { status: 400 })
+    rawContent = customTpl.content
+    effectiveName = customTpl.name
+  } else {
+    rawContent = defaultTemplateDef?.content || ''
+    effectiveName = defaultTemplateDef?.name || 'Neues Dokument'
+  }
+
+  const filledContent = fillPlaceholders(rawContent, placeholders)
+  const docName = name || effectiveName
 
   const { data, error } = await supabaseAdmin.from('documents').insert({
     owner_id: user.id,

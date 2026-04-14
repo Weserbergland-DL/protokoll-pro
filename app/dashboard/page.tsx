@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Logo } from '@/components/brand/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import {
-  Plus, LogOut, Settings, ShieldCheck, FileText, Archive,
+  Plus, LogOut, Settings, ShieldCheck, FileText, Archive, Bookmark,
   CircleCheck, Clock, Search,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -263,6 +263,9 @@ export default function Dashboard() {
                 )}
               </div>
             )}
+            <Button variant="ghost" size="icon" title="Eigene Vorlagen" onClick={() => router.push('/templates')}>
+              <Bookmark className="h-4 w-4" />
+            </Button>
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
               <DialogTrigger render={<Button variant="ghost" size="icon" title="Stammdaten" />}>
                 <Settings className="h-4 w-4" />
