@@ -41,7 +41,19 @@ export function fillPlaceholders(content: string, data: Record<string, string>):
   return result
 }
 
-export const DEFAULT_TEMPLATES = {
+export const DEFAULT_TEMPLATES: Record<string, { name: string; type: string; content: string }> = {
+  sonstiges: {
+    name: 'Neues Dokument',
+    type: 'sonstiges',
+    content: `<h1>Neues Dokument</h1>
+<p>Erstellt am {{datum_heute}}</p>
+<hr>
+<p>Mietobjekt: {{adresse}}</p>
+<p>Mieter: {{mieter_name}}</p>
+<hr>
+<p></p>`,
+  },
+
   wohnungsgeberbestaetigung: {
     name: 'Wohnungsgeberbestätigung',
     type: 'wohnungsgeberbestaetigung' as const,

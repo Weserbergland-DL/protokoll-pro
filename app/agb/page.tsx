@@ -3,16 +3,16 @@ import Footer from '@/components/layout/Footer'
 
 export default function AGB() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Allgemeine Geschäftsbedingungen</h1>
-        <p className="text-slate-500 text-sm mb-8">Stand: April 2026 · ImmoAkte, betrieben von Weserbergland Dienstleistungen</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Allgemeine Geschäftsbedingungen</h1>
+        <p className="text-muted-foreground text-sm mb-8">Stand: April 2026 · ImmoAkte, betrieben von Weserbergland Dienstleistungen</p>
 
-        <div className="space-y-8 text-slate-700 text-sm leading-relaxed">
+        <div className="space-y-8 text-muted-foreground text-sm leading-relaxed">
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 1 Geltungsbereich</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 1 Geltungsbereich</h2>
             <p>
               Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Weserbergland Dienstleistungen, Inhaber Özgür Tikiz, Chamissostraße 23, 31785 Hameln (nachfolgend „Anbieter") und den Nutzern der Plattform ImmoAkte (nachfolgend „Nutzer").
             </p>
@@ -22,7 +22,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 2 Leistungsbeschreibung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 2 Leistungsbeschreibung</h2>
             <p>
               ImmoAkte ist eine webbasierte Software-as-a-Service-Plattform (SaaS) zur digitalen Erstellung und Verwaltung von Wohnungsübergabeprotokollen. Die Plattform ermöglicht:
             </p>
@@ -39,7 +39,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 3 Registrierung & Vertragsschluss</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 3 Registrierung & Vertragsschluss</h2>
             <p>
               Die Registrierung ist kostenlos. Mit der Registrierung kommt ein Nutzungsvertrag für den Gratis-Tarif zustande. Für kostenpflichtige Tarife kommt der Vertrag mit Abschluss des Zahlungsvorgangs über Stripe zustande.
             </p>
@@ -49,7 +49,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 4 Tarife & Preise</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 4 Tarife & Preise</h2>
             <p>Es stehen folgende Tarife zur Verfügung:</p>
             <div className="mt-3 overflow-x-auto">
               <table className="w-full text-sm border-collapse">
@@ -90,7 +90,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 5 Zahlung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 5 Zahlung</h2>
             <p>
               Zahlungen werden ausschließlich über Stripe Payments Europe, Ltd. abgewickelt. Für Einmalzahlungen (Gratis, Flex) erfolgt die Abrechnung sofort. Für Abonnements (Standard, Pro) wird der Betrag monatlich im Voraus am jeweiligen Vertragsjahrestag abgebucht.
             </p>
@@ -100,7 +100,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 6 Laufzeit & Kündigung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 6 Laufzeit & Kündigung</h2>
             <p>
               Abonnements (Standard, Pro) sind monatlich kündbar. Die Kündigung wird zum Ende des laufenden Abrechnungszeitraums wirksam. Eine Kündigung kann über die Kontoeinstellungen oder per E-Mail an <a href="mailto:info@weserbergland-dienstleistungen.de" className="text-primary hover:underline">info@weserbergland-dienstleistungen.de</a> erfolgen.
             </p>
@@ -113,7 +113,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 7 Nutzungsrechte & Pflichten</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 7 Nutzungsrechte & Pflichten</h2>
             <p>
               Der Nutzer erhält ein einfaches, nicht übertragbares Recht zur Nutzung der Plattform im Rahmen des gebuchten Tarifs. Die Weitergabe von Zugangsdaten an Dritte ist nicht gestattet.
             </p>
@@ -126,7 +126,7 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 8 Haftung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 8 Haftung</h2>
             <p>
               Der Anbieter haftet unbeschränkt für Schäden aus der Verletzung von Leben, Körper oder Gesundheit sowie für Schäden, die auf Vorsatz oder grober Fahrlässigkeit beruhen.
             </p>
@@ -139,28 +139,28 @@ export default function AGB() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 9 Verfügbarkeit & Wartung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 9 Verfügbarkeit & Wartung</h2>
             <p>
               Der Anbieter strebt eine Verfügbarkeit von 99 % im Jahresmittel an, schuldet diese jedoch nicht. Planmäßige Wartungsarbeiten werden nach Möglichkeit außerhalb der Hauptnutzungszeiten durchgeführt.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 10 Datenschutz</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 10 Datenschutz</h2>
             <p>
               Die Verarbeitung personenbezogener Daten erfolgt gemäß unserer <a href="/datenschutz" className="text-primary hover:underline">Datenschutzerklärung</a>. Soweit der Nutzer über die Plattform personenbezogene Daten Dritter (z. B. Mieterdaten) verarbeitet, schließen die Parteien auf Anfrage einen Auftragsverarbeitungsvertrag gemäß Art. 28 DSGVO ab.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 11 Änderungen der AGB</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 11 Änderungen der AGB</h2>
             <p>
               Der Anbieter behält sich das Recht vor, diese AGB mit einer Frist von 30 Tagen zu ändern. Die Änderung wird dem Nutzer per E-Mail mitgeteilt. Widerspricht der Nutzer nicht innerhalb von 30 Tagen, gelten die geänderten AGB als akzeptiert.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 12 Schlussbestimmungen</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">§ 12 Schlussbestimmungen</h2>
             <p>
               Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand für Streitigkeiten mit Kaufleuten oder juristischen Personen des öffentlichen Rechts ist Hameln.
             </p>

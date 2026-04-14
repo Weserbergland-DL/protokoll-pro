@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { Check, Mail, ArrowRight, Zap, Building2, Star } from 'lucide-react'
+import { Check, Mail, ArrowRight, Zap, Building2, Star, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 const FEATURES_ALL = [
   'Mietverhältnisse verwalten',
@@ -109,7 +110,7 @@ const PLANS = [
 
 const PRODUCT_HIGHLIGHTS = [
   { icon: Building2, title: 'Mietverhältnisse', desc: 'Alle Mieter, Immobilien und Verträge an einem Ort verwalten' },
-  { icon: Zap, title: 'Übergabeprotokolle', desc: 'Einzug und Auszug digital erfassen — mit Fotos, Zählerständen & Unterschriften' },
+  { icon: Zap, title: 'Übergabeprotokolle', desc: 'Einzug und Auszug digital — mit Fotos, Zählerständen & Unterschriften' },
   { icon: Star, title: 'Rechtliche Dokumente', desc: 'Mietvertrag, Wohnungsgeberbestätigung, Kautionsbescheinigung — automatisch befüllt' },
 ]
 
@@ -144,131 +145,146 @@ export default function Pricing() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-16 max-w-6xl">
-
+      <main className="flex-1">
         {/* Hero */}
-        <div className="text-center mb-14">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl mb-3">
-            Tarife & Preise
-          </h1>
-          <p className="text-base text-slate-500 max-w-2xl mx-auto">
-            Übergabeprotokolle, Mietverträge und alle wichtigen Unterlagen — komplett digital, rechtssicher und in Minuten erledigt.
-          </p>
-        </div>
-
-        {/* Product highlights */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mb-14">
-          {PRODUCT_HIGHLIGHTS.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex items-start gap-3 bg-white rounded-xl border border-slate-200 px-5 py-4 shadow-sm">
-              <div className="mt-0.5 rounded-lg bg-primary/10 p-2 shrink-0">
-                <Icon className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-800">{title}</p>
-                <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Pricing cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto items-start">
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative flex flex-col rounded-2xl border bg-white shadow-sm ${
-                plan.popular
-                  ? 'border-primary border-2 shadow-md shadow-primary/10'
-                  : 'border-slate-200'
-              }`}
-            >
-              {plan.badge && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full shadow whitespace-nowrap">
-                    {plan.badge}
-                  </span>
-                </div>
-              )}
-
-              <div className={`p-6 flex flex-col flex-1 ${plan.badge ? 'pt-8' : ''}`}>
-
-                {/* Name & description */}
-                <div className="mb-4">
-                  <h2 className="text-base font-bold text-slate-900">{plan.name}</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">{plan.description}</p>
-                </div>
-
-                {/* Price */}
-                <div className="mb-1">
-                  <span className="text-3xl font-extrabold text-slate-900">{plan.price}</span>
-                  {plan.period && (
-                    <span className="text-slate-400 text-sm ml-1.5">{plan.period}</span>
-                  )}
-                </div>
-
-                {/* Sub-price / highlight */}
-                <div className="mb-5 h-6">
-                  {plan.highlight && (
-                    <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
-                      {plan.highlight}
-                    </span>
-                  )}
-                </div>
-
-                {/* Features */}
-                <ul className="space-y-2 flex-1 mb-6">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-slate-600">
-                      <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                {plan.href ? (
-                  <Link href={plan.href}>
-                    <Button variant={plan.ctaVariant} className="w-full">{plan.cta}</Button>
-                  </Link>
-                ) : (
-                  <Button
-                    variant={plan.ctaVariant}
-                    className="w-full"
-                    onClick={() => plan.priceKey && plan.mode && handleSubscribe(plan.priceKey, plan.mode)}
-                    disabled={loading === plan.priceKey}
-                  >
-                    {loading === plan.priceKey ? 'Lädt...' : plan.cta}
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Enterprise */}
-        <div className="mt-6 max-w-5xl mx-auto rounded-2xl border border-slate-200 bg-slate-900 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider font-medium mb-1">Mehr als 50 Protokolle pro Monat?</p>
-            <h3 className="text-lg font-semibold text-white">Individuell auf Anfrage</h3>
-            <p className="text-slate-400 text-sm mt-1 max-w-sm">
-              Für größere Hausverwaltungen, Immobilienbüros oder Teams schnüren wir ein passendes Paket — inklusive individueller Dokumentvorlagen und Onboarding.
+        <section className="py-20 sm:py-28 border-b border-border">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brass-600 dark:text-brass-400 mb-3">
+              Tarife & Preise
+            </p>
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl tracking-tight text-foreground leading-[1.05] mb-5">
+              Einfach. Transparent.<br className="hidden sm:block" /> Ohne Überraschungen.
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Übergabeprotokolle, Mietverträge und alle wichtigen Unterlagen — komplett digital, rechtssicher und in Minuten erledigt.
             </p>
           </div>
-          <a href="mailto:hallo@immoakte.app" className="shrink-0">
-            <Button className="bg-white text-slate-900 hover:bg-slate-100 font-medium gap-2 shadow-sm">
-              <Mail className="h-4 w-4" />
-              Angebot anfragen
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </a>
-        </div>
+        </section>
 
-        {/* Legal note */}
-        <p className="mt-6 text-center text-xs text-slate-400">
-          Alle Preise zzgl. gesetzl. MwSt. · Abonnements monatlich kündbar · Keine automatische Verlängerung ohne Kündigung
-        </p>
+        {/* Product highlights */}
+        <section className="py-12 border-b border-border bg-muted/30">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {PRODUCT_HIGHLIGHTS.map(({ icon: Icon, title, desc }) => (
+                <div key={title} className="flex items-start gap-3 bg-card rounded-2xl border border-border px-5 py-4">
+                  <div className="mt-0.5 rounded-xl bg-brass-50 p-2 shrink-0">
+                    <Icon className="h-4 w-4 text-brass-700" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing cards */}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-start">
+              {PLANS.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={cn(
+                    'relative flex flex-col rounded-3xl border bg-card overflow-hidden',
+                    plan.popular
+                      ? 'border-ink-700 shadow-ink ring-1 ring-ink-700/20'
+                      : 'border-border shadow-xs'
+                  )}
+                >
+                  {/* Popular accent strip */}
+                  {plan.popular && (
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brass-400 via-brass-500 to-brass-400" />
+                  )}
+
+                  {plan.badge && (
+                    <div className="absolute -top-0 left-0 right-0 flex justify-center pt-3">
+                      <span className="bg-brass-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        {plan.badge}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={cn('p-6 flex flex-col flex-1', plan.badge ? 'pt-10' : '')}>
+                    {/* Name */}
+                    <div className="mb-4">
+                      <h2 className="font-heading text-xl text-foreground">{plan.name}</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">{plan.description}</p>
+                    </div>
+
+                    {/* Price */}
+                    <div className="mb-1">
+                      <span className="text-4xl font-bold text-foreground tracking-tight">{plan.price}</span>
+                      {plan.period && (
+                        <span className="text-muted-foreground text-sm ml-2">{plan.period}</span>
+                      )}
+                    </div>
+
+                    <div className="mb-6 h-6">
+                      {plan.highlight && (
+                        <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
+                          {plan.highlight}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Features */}
+                    <ul className="space-y-2.5 flex-1 mb-6">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* CTA */}
+                    {plan.href ? (
+                      <Link href={plan.href}>
+                        <Button variant={plan.ctaVariant} className="w-full">{plan.cta}</Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        variant={plan.ctaVariant}
+                        className="w-full"
+                        onClick={() => plan.priceKey && plan.mode && handleSubscribe(plan.priceKey, plan.mode)}
+                        disabled={loading === plan.priceKey}
+                      >
+                        {loading === plan.priceKey ? 'Lädt…' : plan.cta}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Enterprise */}
+            <div className="mt-6 rounded-3xl bg-ink-900 border border-ink-700 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] text-brass-400 uppercase tracking-wider font-semibold mb-1">Mehr als 50 Protokolle pro Monat?</p>
+                <h3 className="font-heading text-2xl text-background leading-tight">Individuell auf Anfrage</h3>
+                <p className="text-background/60 text-sm mt-1.5 max-w-md leading-relaxed">
+                  Für größere Hausverwaltungen, Immobilienbüros oder Teams schnüren wir ein passendes Paket — inklusive individueller Dokumentvorlagen und Onboarding.
+                </p>
+              </div>
+              <a href="mailto:hallo@immoakte.app" className="shrink-0">
+                <Button className="bg-brass-400 text-ink-900 hover:bg-brass-300 shadow-brass font-semibold gap-2">
+                  <Mail className="h-4 w-4" />
+                  Angebot anfragen
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </a>
+            </div>
+
+            <p className="mt-6 text-center text-xs text-muted-foreground">
+              Alle Preise zzgl. gesetzl. MwSt. · Abonnements monatlich kündbar · Keine automatische Verlängerung ohne Kündigung
+            </p>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

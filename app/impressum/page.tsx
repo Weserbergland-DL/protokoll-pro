@@ -3,15 +3,15 @@ import Footer from '@/components/layout/Footer'
 
 export default function Impressum() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
-        <h1 className="text-3xl font-bold text-slate-900 mb-8">Impressum</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">Impressum</h1>
 
-        <div className="prose prose-slate max-w-none space-y-8 text-slate-700">
+        <div className="prose prose-stone dark:prose-invert max-w-none space-y-8 text-muted-foreground">
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">Angaben gemäß § 5 TMG</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">Angaben gemäß § 5 TMG</h2>
             <p>
               Weserbergland Dienstleistungen<br />
               Inhaber: Özgür Tikiz<br />
@@ -22,7 +22,7 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">Kontakt</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">Kontakt</h2>
             <p>
               Telefon: +49 5151 7103786<br />
               Mobil: +49 176 84423764<br />
@@ -31,7 +31,7 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">Umsatzsteuer-ID</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">Umsatzsteuer-ID</h2>
             <p>
               Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:<br />
               DE322581796
@@ -42,7 +42,7 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
             <p>
               Özgür Tikiz<br />
               Chamissostraße 23<br />
@@ -51,7 +51,7 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">Streitschlichtung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">Streitschlichtung</h2>
             <p>
               Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{' '}
               <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
@@ -64,7 +64,7 @@ export default function Impressum() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">Haftungsausschluss</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">Haftungsausschluss</h2>
             <h3 className="font-semibold mt-4 mb-2">Haftung für Inhalte</h3>
             <p>
               Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.

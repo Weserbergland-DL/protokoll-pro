@@ -487,7 +487,7 @@ export default function ProtocolView() {
         setIsEmailDialogOpen={setIsEmailDialogOpen}
         onGeneratePDF={generatePDF}
         onSendEmail={sendEmail}
-        onBack={() => router.push('/dashboard')}
+        onBack={() => router.push(protocol.tenancy_id ? `/tenancy/${protocol.tenancy_id}` : '/dashboard')}
       />
     )
   }

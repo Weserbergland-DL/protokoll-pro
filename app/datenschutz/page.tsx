@@ -3,16 +3,16 @@ import Footer from '@/components/layout/Footer'
 
 export default function Datenschutz() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Datenschutzerklärung</h1>
-        <p className="text-slate-500 text-sm mb-8">Stand: April 2026</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Datenschutzerklärung</h1>
+        <p className="text-muted-foreground text-sm mb-8">Stand: April 2026</p>
 
-        <div className="space-y-8 text-slate-700 text-sm leading-relaxed">
+        <div className="space-y-8 text-muted-foreground text-sm leading-relaxed">
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">1. Verantwortlicher</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">1. Verantwortlicher</h2>
             <p>
               Verantwortlicher im Sinne der DSGVO für die Verarbeitung personenbezogener Daten auf dieser Plattform ist:
             </p>
@@ -26,7 +26,7 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">2. Welche Daten wir verarbeiten</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">2. Welche Daten wir verarbeiten</h2>
             <p>Im Rahmen der Nutzung von ImmoAkte verarbeiten wir folgende Kategorien personenbezogener Daten:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li><strong>Kontodaten:</strong> Name, E-Mail-Adresse</li>
@@ -38,7 +38,7 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">3. Rechtsgrundlagen der Verarbeitung</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">3. Rechtsgrundlagen der Verarbeitung</h2>
             <p>Wir verarbeiten personenbezogene Daten auf Basis folgender Rechtsgrundlagen gemäß DSGVO:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li><strong>Art. 6 Abs. 1 lit. b DSGVO</strong> – Vertragserfüllung: Verarbeitung zur Bereitstellung der gebuchten Leistungen</li>
@@ -49,7 +49,7 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">4. Eingesetzte Drittdienstleister</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">4. Eingesetzte Drittdienstleister</h2>
 
             <h3 className="font-semibold mt-4 mb-1">Supabase (Datenbank & Authentifizierung)</h3>
             <p>
@@ -73,14 +73,14 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">5. Speicherdauer</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">5. Speicherdauer</h2>
             <p>
               Personenbezogene Daten werden nur so lange gespeichert, wie es für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen (z. B. 10 Jahre für steuerrelevante Unterlagen gemäß § 147 AO). Kontodaten werden bei Kündigung des Nutzerkontos auf Anfrage gelöscht.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">6. Ihre Rechte</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">6. Ihre Rechte</h2>
             <p>Sie haben gemäß Art. 15–22 DSGVO folgende Rechte:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li><strong>Auskunft</strong> (Art. 15) – Welche Daten wir über Sie verarbeiten</li>
@@ -99,14 +99,14 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">7. Cookies</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">7. Cookies</h2>
             <p>
               ImmoAkte verwendet technisch notwendige Cookies ausschließlich zur Aufrechterhaltung der Nutzersitzung (Session-Cookie). Es werden keine Tracking- oder Werbe-Cookies eingesetzt. Eine gesonderte Einwilligung ist für technisch notwendige Cookies nicht erforderlich.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">8. Datensicherheit</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">8. Datensicherheit</h2>
             <p>
               Alle Datenübertragungen erfolgen verschlüsselt über HTTPS/TLS. Datenbankzugriffe sind durch Row-Level-Security (RLS) auf Supabase abgesichert – jeder Nutzer sieht ausschließlich eigene Daten. Zahlungsdaten werden nicht auf unseren Servern gespeichert.
             </p>

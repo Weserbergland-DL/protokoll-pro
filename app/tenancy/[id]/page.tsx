@@ -424,6 +424,11 @@ export default function TenancyPage() {
           <div className="mb-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brass-600">Nächster Schritt</p>
             <h2 className="font-heading text-xl text-foreground mt-0.5">Hinzufügen</h2>
+            {availableToAdd.length === 0 && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Alle Standarddokumente wurden bereits angelegt — sie finden sich in der Akte oben.
+              </p>
+            )}
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2">
