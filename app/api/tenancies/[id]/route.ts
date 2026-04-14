@@ -35,6 +35,21 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   })
 }
 
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { id } = await params
+
+  const { data: existing } = await supabaseAdmin
+    .from('tenancies').select('owner_id').eq('id', id).single()
+  if (!existing || existing.owner_id !== user.id)
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const { error } = await supabaseAdmin.from('tenancies').delete().eq('id', id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ success: true })
+}
+
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

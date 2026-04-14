@@ -140,6 +140,7 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
     const newMeters = einzug.meters?.map(m => ({ ...m, reading: '', photoUrl: '' })) || []
 
     const { data, error } = await supabase.from('protocols').insert({
+      tenancy_id: group.tenancyId || einzug.id,
       property_id: einzug.property_id,
       owner_id: userId,
       tenant_salutation: einzug.tenant_salutation || '',

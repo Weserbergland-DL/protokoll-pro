@@ -8,8 +8,9 @@ import { toast } from 'sonner'
 import {
   ArrowLeft, Plus, FileSignature, Home, Key, FileText,
   FileCheck, CheckCircle2, Clock, ChevronRight, Building2,
-  Mail, Phone, User, Pencil
+  Mail, Phone, User, Pencil, Trash2
 } from 'lucide-react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/client'
@@ -68,6 +69,8 @@ export default function TenancyPage() {
   const [items, setItems] = useState<TenancyItem[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState<string | null>(null)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!user) { router.replace('/login'); return }
@@ -168,6 +171,21 @@ export default function TenancyPage() {
     }
   }
 
+  const deleteTenancy = async () => {
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/tenancies/${id}`, { method: 'DELETE' })
+      const { error } = await res.json()
+      if (error) throw new Error(error)
+      toast.success('Mietverhältnis gelöscht')
+      router.push('/dashboard')
+    } catch (err: any) {
+      toast.error('Fehler: ' + (err.message || 'Unbekannt'))
+      setDeleting(false)
+      setDeleteOpen(false)
+    }
+  }
+
   const navigateToItem = (item: TenancyItem) => {
     if (item.kind === 'protocol') router.push(`/protocol/${item.id}`)
     else router.push(`/documents/${item.id}`)
@@ -241,10 +259,16 @@ export default function TenancyPage() {
                 </div>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" title="Bearbeiten"
-              onClick={() => router.push(`/tenancy/${id}/edit`)}>
-              <Pencil className="h-3.5 w-3.5" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" title="Bearbeiten"
+                onClick={() => router.push(`/tenancy/${id}/edit`)}>
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" title="Mietverhältnis löschen"
+                onClick={() => setDeleteOpen(true)}>
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-sm text-slate-600">
             <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
@@ -369,6 +393,25 @@ export default function TenancyPage() {
           </div>
         )}
       </main>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mietverhältnis löschen</DialogTitle>
+            <DialogDescription>
+              Möchten Sie das Mietverhältnis von <strong>{tenantName}</strong> wirklich löschen?
+              Alle zugehörigen Protokolle und Dokumente werden ebenfalls gelöscht.
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={deleting}>Abbrechen</Button>
+            <Button variant="destructive" onClick={deleteTenancy} disabled={deleting}>
+              {deleting ? 'Wird gelöscht...' : 'Endgültig löschen'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
