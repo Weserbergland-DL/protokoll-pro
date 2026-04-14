@@ -42,9 +42,15 @@ interface Document {
 
 interface TenancyGroup {
   id: string
-  tenancyId?: string   // real tenancy table ID (may differ from einzug.id for new tenancies)
+  tenancyId?: string
   tenantName: string
   propertyAddress?: string
+  propertyId?: string
+  tenantSalutation?: string
+  tenantFirstName?: string
+  tenantLastName?: string
+  tenantEmail?: string
+  tenantPhone?: string
   einzug?: Protocol
   auszug?: Protocol
 }
@@ -132,6 +138,32 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
     router.push(`/documents/${document.id}`)
   }
 
+  const createEinzug = async () => {
+    toast.loading('Erstelle Einzugsprotokoll...', { id: 'create-einzug' })
+    const { data, error } = await supabase.from('protocols').insert({
+      tenancy_id: group.tenancyId,
+      property_id: group.propertyId || null,
+      owner_id: userId,
+      tenant_salutation: group.tenantSalutation || '',
+      tenant_first_name: group.tenantFirstName || '',
+      tenant_last_name: group.tenantLastName || '',
+      tenant_email: group.tenantEmail || null,
+      tenant_phone: group.tenantPhone || null,
+      date: new Date().toISOString(),
+      type: 'Einzug',
+      status: 'draft',
+      rooms: [],
+      meters: [
+        { id: crypto.randomUUID(), type: 'Strom', number: '', reading: '', photoUrl: '' },
+        { id: crypto.randomUUID(), type: 'Wasser', number: '', reading: '', photoUrl: '' },
+      ],
+      keys: [],
+    }).select().single()
+    if (error) { toast.error('Fehler', { id: 'create-einzug' }); return }
+    toast.success('Einzugsprotokoll erstellt', { id: 'create-einzug' })
+    router.push(`/protocol/${data.id}`)
+  }
+
   const createAuszug = async () => {
     if (!group.einzug) return
     toast.loading('Erstelle Auszugsprotokoll...', { id: 'create-auszug' })
@@ -189,6 +221,14 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
 
       <CardContent className="flex-1 flex flex-col gap-2">
         {/* Protocols */}
+        {!group.einzug && (
+          <button className="flex items-center justify-between rounded-md border border-dashed border-slate-300 px-3 py-2 text-left hover:border-primary hover:bg-primary/5 transition-colors w-full"
+            onClick={(e) => { e.stopPropagation(); createEinzug() }}>
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+              <Plus className="h-3.5 w-3.5" /> Einzugsprotokoll erstellen
+            </p>
+          </button>
+        )}
         {group.einzug && (
           <button className="flex items-center justify-between rounded-md bg-slate-50 border border-slate-200 px-3 py-2 text-left hover:bg-slate-100 transition-colors w-full"
             onClick={(e) => { e.stopPropagation(); router.push(`/protocol/${group.einzug!.id}`) }}>

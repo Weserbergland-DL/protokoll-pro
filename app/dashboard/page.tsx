@@ -36,6 +36,12 @@ interface TenancyGroup {
   tenancyId?: string
   tenantName: string
   propertyAddress?: string
+  propertyId?: string
+  tenantSalutation?: string
+  tenantFirstName?: string
+  tenantLastName?: string
+  tenantEmail?: string
+  tenantPhone?: string
   einzug?: Protocol
   auszug?: Protocol
 }
@@ -111,6 +117,12 @@ export default function Dashboard() {
         tenancyId: t.id,
         tenantName: `${t.tenant_first_name || ''} ${t.tenant_last_name || ''}`.trim() || 'Unbekannter Mieter',
         propertyAddress: address || 'Unbekannte Adresse',
+        propertyId: prop?.id,
+        tenantSalutation: t.tenant_salutation,
+        tenantFirstName: t.tenant_first_name,
+        tenantLastName: t.tenant_last_name,
+        tenantEmail: t.tenant_email,
+        tenantPhone: t.tenant_phone,
         einzug: einzug ? { ...einzug, propertyAddress: address } : undefined,
         auszug: auszug ? { ...auszug, propertyAddress: address } : undefined,
       }
