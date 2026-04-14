@@ -63,7 +63,7 @@ function LoginForm() {
       <header className="flex items-center justify-center p-6">
         <Link href="/" className="flex items-center gap-2">
           <ClipboardCheck className="h-7 w-7 text-primary" />
-          <span className="text-xl font-bold">Protokoll-Pro</span>
+          <span className="text-xl font-bold">ImmoAkte</span>
         </Link>
       </header>
       <div className="flex flex-1 items-center justify-center p-4">
@@ -71,7 +71,7 @@ function LoginForm() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">{isSignUp ? 'Registrieren' : 'Anmelden'}</CardTitle>
             <CardDescription>
-              {isSignUp ? 'Erstellen Sie Ihr Konto' : 'Willkommen zurück bei Protokoll-Pro'}
+              {isSignUp ? 'Erstellen Sie Ihr Konto' : 'Willkommen zurück bei ImmoAkte'}
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -195,7 +195,7 @@ export default function Dashboard() {
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            <h1 className="text-base font-bold">Protokoll-Pro</h1>
+            <h1 className="text-base font-bold">ImmoAkte</h1>
           </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={() => router.push('/pricing')} className="hidden sm:inline-flex text-sm font-medium text-slate-600">

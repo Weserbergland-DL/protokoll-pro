@@ -27,7 +27,7 @@ export default function Datenschutz() {
 
           <section>
             <h2 className="text-xl font-semibold text-slate-900 mb-3">2. Welche Daten wir verarbeiten</h2>
-            <p>Im Rahmen der Nutzung von Protokoll-Pro verarbeiten wir folgende Kategorien personenbezogener Daten:</p>
+            <p>Im Rahmen der Nutzung von ImmoAkte verarbeiten wir folgende Kategorien personenbezogener Daten:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li><strong>Kontodaten:</strong> Name, E-Mail-Adresse</li>
               <li><strong>Protokolldaten:</strong> Namen, Anschriften und Kontaktdaten von Mietern und Vermietern, Adresse der Immobilie</li>
@@ -101,7 +101,7 @@ export default function Datenschutz() {
           <section>
             <h2 className="text-xl font-semibold text-slate-900 mb-3">7. Cookies</h2>
             <p>
-              Protokoll-Pro verwendet technisch notwendige Cookies ausschließlich zur Aufrechterhaltung der Nutzersitzung (Session-Cookie). Es werden keine Tracking- oder Werbe-Cookies eingesetzt. Eine gesonderte Einwilligung ist für technisch notwendige Cookies nicht erforderlich.
+              ImmoAkte verwendet technisch notwendige Cookies ausschließlich zur Aufrechterhaltung der Nutzersitzung (Session-Cookie). Es werden keine Tracking- oder Werbe-Cookies eingesetzt. Eine gesonderte Einwilligung ist für technisch notwendige Cookies nicht erforderlich.
             </p>
           </section>
 

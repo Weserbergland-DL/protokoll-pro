@@ -1,5 +1,5 @@
 {
-  "name": "Protokoll-Pro",
-  "description": "Die digitale Mietübergabe für private Vermieter. Rechtssichere PDF-Protokolle mit Fotobeweisen und digitalen Unterschriften.",
+  "name": "ImmoAkte",
+  "description": "Mietverhältnisse, Übergabeprotokolle und rechtliche Dokumente — alles in einer App.",
   "requestFramePermissions": ["camera", "geolocation"]
 }

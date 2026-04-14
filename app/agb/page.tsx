@@ -7,14 +7,14 @@ export default function AGB() {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">Allgemeine Geschäftsbedingungen</h1>
-        <p className="text-slate-500 text-sm mb-8">Stand: April 2026 · Protokoll-Pro, betrieben von Weserbergland Dienstleistungen</p>
+        <p className="text-slate-500 text-sm mb-8">Stand: April 2026 · ImmoAkte, betrieben von Weserbergland Dienstleistungen</p>
 
         <div className="space-y-8 text-slate-700 text-sm leading-relaxed">
 
           <section>
             <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 1 Geltungsbereich</h2>
             <p>
-              Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Weserbergland Dienstleistungen, Inhaber Özgür Tikiz, Chamissostraße 23, 31785 Hameln (nachfolgend „Anbieter") und den Nutzern der Plattform Protokoll-Pro (nachfolgend „Nutzer").
+              Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Weserbergland Dienstleistungen, Inhaber Özgür Tikiz, Chamissostraße 23, 31785 Hameln (nachfolgend „Anbieter") und den Nutzern der Plattform ImmoAkte (nachfolgend „Nutzer").
             </p>
             <p className="mt-2">
               Abweichende Bedingungen des Nutzers gelten nicht, sofern der Anbieter diesen nicht ausdrücklich schriftlich zugestimmt hat.
@@ -24,7 +24,7 @@ export default function AGB() {
           <section>
             <h2 className="text-xl font-semibold text-slate-900 mb-3">§ 2 Leistungsbeschreibung</h2>
             <p>
-              Protokoll-Pro ist eine webbasierte Software-as-a-Service-Plattform (SaaS) zur digitalen Erstellung und Verwaltung von Wohnungsübergabeprotokollen. Die Plattform ermöglicht:
+              ImmoAkte ist eine webbasierte Software-as-a-Service-Plattform (SaaS) zur digitalen Erstellung und Verwaltung von Wohnungsübergabeprotokollen. Die Plattform ermöglicht:
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Erfassung von Raumzuständen, Mängeln und Fotos</li>

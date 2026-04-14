@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-slate-500">
             <ClipboardCheck className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-slate-700">Protokoll-Pro</span>
+            <span className="text-sm font-medium text-slate-700">ImmoAkte</span>
             <span className="text-slate-300 hidden sm:inline">·</span>
             <span className="text-xs text-slate-400 hidden sm:inline">© {new Date().getFullYear()} Weserbergland Dienstleistungen</span>
           </div>

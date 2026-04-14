@@ -47,7 +47,7 @@ export default function BetaPage() {
         <div className="flex justify-center mb-8">
           <Link href="/dashboard" className="flex items-center gap-2">
             <ClipboardCheck className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold text-slate-900">Protokoll-Pro</span>
+            <span className="text-xl font-bold text-slate-900">ImmoAkte</span>
           </Link>
         </div>
 
@@ -63,7 +63,7 @@ export default function BetaPage() {
             </div>
           </div>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Protokoll-Pro befindet sich aktuell in der Beta-Phase. Wir nehmen in dieser Zeit <strong>kein Geld</strong> für die Nutzung — Sie können alle Funktionen vollständig und kostenlos nutzen.
+            ImmoAkte befindet sich aktuell in der Beta-Phase. Wir nehmen in dieser Zeit <strong>kein Geld</strong> für die Nutzung — Sie können alle Funktionen vollständig und kostenlos nutzen.
           </p>
           <p className="text-slate-600 text-sm leading-relaxed mt-3">
             Im Gegenzug würden wir uns sehr über Ihr ehrliches Feedback freuen: Was funktioniert gut? Was fehlt? Was könnte besser sein? Jede Rückmeldung hilft uns, die App weiterzuentwickeln.

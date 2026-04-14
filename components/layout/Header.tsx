@@ -16,7 +16,7 @@ export default function Header() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <ClipboardCheck className="h-6 w-6 text-primary" />
-          <span className="text-base font-bold tracking-tight">Protokoll-Pro</span>
+          <span className="text-base font-bold tracking-tight">ImmoAkte</span>
         </Link>
         <div className="flex items-center gap-1">
           <Link

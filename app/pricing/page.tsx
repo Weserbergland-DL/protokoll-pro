@@ -256,7 +256,7 @@ export default function Pricing() {
               Für größere Hausverwaltungen, Immobilienbüros oder Teams schnüren wir ein passendes Paket — inklusive individueller Dokumentvorlagen und Onboarding.
             </p>
           </div>
-          <a href="mailto:hallo@protokoll-pro.de" className="shrink-0">
+          <a href="mailto:hallo@immoakte.app" className="shrink-0">
             <Button className="bg-white text-slate-900 hover:bg-slate-100 font-medium gap-2 shadow-sm">
               <Mail className="h-4 w-4" />
               Angebot anfragen

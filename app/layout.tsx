@@ -4,8 +4,8 @@ import './globals.css'
 import { Providers } from './providers'
 
 export const metadata: Metadata = {
-  title: 'Protokoll-Pro - Digitale Mietübergabe',
-  description: 'Erstellen Sie professionelle Übergabeprotokolle in Minuten. Rechtssicher, digital und direkt auf dem Smartphone.',
+  title: 'ImmoAkte - Digitale Immobiliendokumentation',
+  description: 'Mietverhältnisse verwalten, Übergabeprotokolle erstellen und rechtliche Dokumente ausfüllen — alles in einer App.',
 }
 
 export default function RootLayout({
