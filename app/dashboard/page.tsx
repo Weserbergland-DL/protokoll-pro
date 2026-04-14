@@ -49,6 +49,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [userName, setUserName] = useState('')
   const [userCompany, setUserCompany] = useState('')
+  const [userStreet, setUserStreet] = useState('')
+  const [userHouseNumber, setUserHouseNumber] = useState('')
+  const [userZipCode, setUserZipCode] = useState('')
+  const [userCity, setUserCity] = useState('')
+  const [userPhone, setUserPhone] = useState('')
+  const [userEmailContact, setUserEmailContact] = useState('')
+  const [userIban, setUserIban] = useState('')
+  const [userBankName, setUserBankName] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [protocolToDelete, setProtocolToDelete] = useState<string | null>(null)
@@ -61,8 +69,19 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     const { data: profile } = await supabase
-      .from('users').select('name, company').eq('id', user!.id).single()
-    if (profile) { setUserName(profile.name || ''); setUserCompany(profile.company || '') }
+      .from('users').select('name, company, street, house_number, zip_code, city, phone, email_contact, iban, bank_name').eq('id', user!.id).single()
+    if (profile) {
+      setUserName(profile.name || '')
+      setUserCompany(profile.company || '')
+      setUserStreet(profile.street || '')
+      setUserHouseNumber(profile.house_number || '')
+      setUserZipCode(profile.zip_code || '')
+      setUserCity(profile.city || '')
+      setUserPhone(profile.phone || '')
+      setUserEmailContact(profile.email_contact || '')
+      setUserIban(profile.iban || '')
+      setUserBankName(profile.bank_name || '')
+    }
 
     if (isAdmin) {
       const { count } = await supabase
@@ -102,8 +121,18 @@ export default function Dashboard() {
   }
 
   const saveSettings = async () => {
-    const { error } = await supabase
-      .from('users').update({ name: userName, company: userCompany }).eq('id', user!.id)
+    const { error } = await supabase.from('users').update({
+      name: userName,
+      company: userCompany,
+      street: userStreet,
+      house_number: userHouseNumber,
+      zip_code: userZipCode,
+      city: userCity,
+      phone: userPhone,
+      email_contact: userEmailContact,
+      iban: userIban,
+      bank_name: userBankName,
+    }).eq('id', user!.id)
     if (error) toast.error('Fehler beim Speichern')
     else { toast.success('Stammdaten gespeichert'); setIsSettingsOpen(false) }
   }
@@ -176,17 +205,75 @@ export default function Dashboard() {
               <DialogTrigger render={<Button variant="ghost" size="icon" title="Stammdaten" />}>
                 <Settings className="h-5 w-5" />
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader><DialogTitle>Stammdaten</DialogTitle></DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label>Ihr Name (Vermieter/Verwalter)</Label>
-                    <Input value={userName} onChange={e => setUserName(e.target.value)} placeholder="Max Mustermann" />
+                <div className="space-y-5 py-4">
+                  {/* Person / Firma */}
+                  <div className="space-y-3">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Person &amp; Firma</p>
+                    <div className="space-y-2">
+                      <Label>Ihr Name (Vermieter/Verwalter)</Label>
+                      <Input value={userName} onChange={e => setUserName(e.target.value)} placeholder="Max Mustermann" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Firma <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                      <Input value={userCompany} onChange={e => setUserCompany(e.target.value)} placeholder="Immobilien GmbH" />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Firma (Optional)</Label>
-                    <Input value={userCompany} onChange={e => setUserCompany(e.target.value)} placeholder="Immobilien GmbH" />
+
+                  {/* Adresse */}
+                  <div className="space-y-3 border-t pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ihre Adresse</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-2 space-y-2">
+                        <Label>Straße</Label>
+                        <Input value={userStreet} onChange={e => setUserStreet(e.target.value)} placeholder="Musterstraße" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Hausnr.</Label>
+                        <Input value={userHouseNumber} onChange={e => setUserHouseNumber(e.target.value)} placeholder="1a" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="space-y-2">
+                        <Label>PLZ</Label>
+                        <Input value={userZipCode} onChange={e => setUserZipCode(e.target.value)} placeholder="12345" />
+                      </div>
+                      <div className="col-span-2 space-y-2">
+                        <Label>Ort</Label>
+                        <Input value={userCity} onChange={e => setUserCity(e.target.value)} placeholder="Musterstadt" />
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Kontakt */}
+                  <div className="space-y-3 border-t pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Kontakt</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-2">
+                        <Label>Telefon</Label>
+                        <Input value={userPhone} onChange={e => setUserPhone(e.target.value)} placeholder="+49 123 456789" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>E-Mail</Label>
+                        <Input type="email" value={userEmailContact} onChange={e => setUserEmailContact(e.target.value)} placeholder="max@beispiel.de" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bankverbindung */}
+                  <div className="space-y-3 border-t pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Bankverbindung</p>
+                    <div className="space-y-2">
+                      <Label>IBAN</Label>
+                      <Input value={userIban} onChange={e => setUserIban(e.target.value)} placeholder="DE12 3456 7890 1234 5678 90" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Bank <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                      <Input value={userBankName} onChange={e => setUserBankName(e.target.value)} placeholder="Musterbank" />
+                    </div>
+                  </div>
+
                   <Button onClick={saveSettings} className="w-full">Speichern</Button>
                 </div>
               </DialogContent>

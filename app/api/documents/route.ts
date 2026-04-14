@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
   // Get user profile for placeholders
   const { data: profile } = await supabaseAdmin
-    .from('users').select('name, company').eq('id', user.id).single()
+    .from('users').select('name, company, street, house_number, zip_code, city, phone, email_contact, iban, bank_name').eq('id', user.id).single()
 
   // Get tenancy/protocol data for placeholder filling
   let tenancyData: any = null
@@ -76,9 +76,20 @@ export async function POST(request: NextRequest) {
     ? (propertyData.address || `${propertyData.street || ''} ${propertyData.house_number || ''}, ${propertyData.zip_code || ''} ${propertyData.city || ''}`.trim())
     : ''
 
+  const landlordStreet = profile ? `${profile.street || ''} ${profile.house_number || ''}`.trim() : ''
+  const landlordPlzOrt = profile ? `${profile.zip_code || ''} ${profile.city || ''}`.trim() : ''
+  const landlordAddress = landlordStreet && landlordPlzOrt ? `${landlordStreet}, ${landlordPlzOrt}` : (landlordStreet || landlordPlzOrt)
+
   const placeholders: Record<string, string> = {
-    '{{vermieter_name}}': profile?.name || '',
-    '{{vermieter_firma}}': profile?.company || '',
+    '{{vermieter_name}}':    profile?.name || '',
+    '{{vermieter_firma}}':   profile?.company || '',
+    '{{vermieter_adresse}}': landlordAddress,
+    '{{vermieter_strasse}}': landlordStreet,
+    '{{vermieter_plz_ort}}': landlordPlzOrt,
+    '{{vermieter_telefon}}': profile?.phone || '',
+    '{{vermieter_email}}':   profile?.email_contact || '',
+    '{{vermieter_iban}}':    profile?.iban || '',
+    '{{vermieter_bank}}':    profile?.bank_name || '',
     '{{mieter_anrede}}': tenancyData?.tenant_salutation || '',
     '{{mieter_vorname}}': tenancyData?.tenant_first_name || '',
     '{{mieter_nachname}}': tenancyData?.tenant_last_name || '',

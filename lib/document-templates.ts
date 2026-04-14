@@ -1,23 +1,33 @@
 // Default document templates with {{placeholders}}
-// Placeholders: {{vermieter_name}}, {{vermieter_firma}}, {{mieter_anrede}}, {{mieter_vorname}},
-// {{mieter_nachname}}, {{mieter_name}}, {{adresse}}, {{strasse}}, {{plz_ort}},
-// {{einzugsdatum}}, {{datum_heute}}, {{kaltmiete}}, {{kaution}}, {{mietbeginn}}
+// Placeholders: {{vermieter_name}}, {{vermieter_firma}}, {{vermieter_adresse}},
+// {{vermieter_strasse}}, {{vermieter_plz_ort}}, {{vermieter_telefon}}, {{vermieter_email}},
+// {{vermieter_iban}}, {{vermieter_bank}},
+// {{mieter_anrede}}, {{mieter_vorname}}, {{mieter_nachname}}, {{mieter_name}},
+// {{adresse}}, {{strasse}}, {{plz_ort}}, {{einzugsdatum}}, {{datum_heute}},
+// {{kaltmiete}}, {{kaution}}, {{mietbeginn}}
 
 export const PLACEHOLDER_LABELS: Record<string, string> = {
-  '{{vermieter_name}}': 'Vermieter Name',
-  '{{vermieter_firma}}': 'Vermieter Firma',
-  '{{mieter_anrede}}': 'Mieter Anrede',
-  '{{mieter_vorname}}': 'Mieter Vorname',
-  '{{mieter_nachname}}': 'Mieter Nachname',
-  '{{mieter_name}}': 'Mieter vollständiger Name',
-  '{{adresse}}': 'Vollständige Adresse',
-  '{{strasse}}': 'Straße + Hausnummer',
-  '{{plz_ort}}': 'PLZ + Ort',
-  '{{einzugsdatum}}': 'Einzugsdatum',
-  '{{datum_heute}}': 'Heutiges Datum',
-  '{{kaltmiete}}': 'Kaltmiete (€)',
-  '{{kaution}}': 'Kautionsbetrag (€)',
-  '{{mietbeginn}}': 'Mietbeginn',
+  '{{vermieter_name}}':     'Vermieter Name',
+  '{{vermieter_firma}}':    'Vermieter Firma',
+  '{{vermieter_adresse}}':  'Vermieter Adresse',
+  '{{vermieter_strasse}}':  'Vermieter Straße + Nr.',
+  '{{vermieter_plz_ort}}':  'Vermieter PLZ + Ort',
+  '{{vermieter_telefon}}':  'Vermieter Telefon',
+  '{{vermieter_email}}':    'Vermieter E-Mail',
+  '{{vermieter_iban}}':     'Vermieter IBAN',
+  '{{vermieter_bank}}':     'Vermieter Bank',
+  '{{mieter_anrede}}':      'Mieter Anrede',
+  '{{mieter_vorname}}':     'Mieter Vorname',
+  '{{mieter_nachname}}':    'Mieter Nachname',
+  '{{mieter_name}}':        'Mieter vollständiger Name',
+  '{{adresse}}':            'Wohnungs-Adresse',
+  '{{strasse}}':            'Straße + Hausnummer',
+  '{{plz_ort}}':            'PLZ + Ort',
+  '{{einzugsdatum}}':       'Einzugsdatum',
+  '{{datum_heute}}':        'Heutiges Datum',
+  '{{kaltmiete}}':          'Kaltmiete (€)',
+  '{{kaution}}':            'Kautionsbetrag (€)',
+  '{{mietbeginn}}':         'Mietbeginn',
 }
 
 export function fillPlaceholders(content: string, data: Record<string, string>): string {
@@ -37,7 +47,9 @@ export const DEFAULT_TEMPLATES = {
 <hr>
 <h2>Wohnungsgeber</h2>
 <p><strong>Name:</strong> {{vermieter_name}}<br>
-<strong>Firma:</strong> {{vermieter_firma}}</p>
+<strong>Firma:</strong> {{vermieter_firma}}<br>
+<strong>Adresse:</strong> {{vermieter_adresse}}<br>
+<strong>Telefon:</strong> {{vermieter_telefon}}</p>
 
 <h2>Mietobjekt</h2>
 <p><strong>Adresse:</strong> {{adresse}}</p>
@@ -62,7 +74,7 @@ Unterschrift Wohnungsgeber<br>
     type: 'kautionsbescheinigung' as const,
     content: `<h1>Bescheinigung über die Anlage der Mietkaution</h1>
 <hr>
-<p>Hiermit bestätige ich, <strong>{{vermieter_name}}</strong> ({{vermieter_firma}}), als Vermieter der Wohnung</p>
+<p>Hiermit bestätige ich, <strong>{{vermieter_name}}</strong> ({{vermieter_firma}}), wohnhaft {{vermieter_adresse}}, als Vermieter der Wohnung</p>
 <p><strong>{{adresse}}</strong></p>
 <p>dass die von <strong>{{mieter_anrede}} {{mieter_vorname}} {{mieter_nachname}}</strong> geleistete Mietkaution in Höhe von</p>
 <p style="text-align: center;"><strong>{{kaution}} Euro</strong></p>
@@ -89,8 +101,14 @@ Unterschrift Vermieter<br>
 <hr>
 
 <h2>§ 1 Vertragsparteien</h2>
-<p><strong>Vermieter:</strong> {{vermieter_name}}, {{vermieter_firma}}</p>
-<p><strong>Mieter:</strong> {{mieter_anrede}} {{mieter_vorname}} {{mieter_nachname}}</p>
+<p><strong>Vermieter:</strong><br>
+{{vermieter_name}}<br>
+{{vermieter_firma}}<br>
+{{vermieter_adresse}}<br>
+Telefon: {{vermieter_telefon}}<br>
+E-Mail: {{vermieter_email}}</p>
+<p><strong>Mieter:</strong><br>
+{{mieter_anrede}} {{mieter_vorname}} {{mieter_nachname}}</p>
 
 <h2>§ 2 Mietobjekt</h2>
 <p>Vermietet wird die Wohnung in: <strong>{{adresse}}</strong></p>
@@ -98,14 +116,20 @@ Unterschrift Vermieter<br>
 <h2>§ 3 Mietdauer</h2>
 <p>Das Mietverhältnis beginnt am <strong>{{mietbeginn}}</strong> und wird auf unbestimmte Zeit geschlossen.</p>
 
-<h2>§ 4 Miete</h2>
-<p>Die monatliche Kaltmiete beträgt: <strong>{{kaltmiete}} Euro</strong></p>
-<p>Zuzüglich Betriebskostenvorauszahlung: ________ Euro</p>
-<p><strong>Gesamtmiete: ________ Euro</strong></p>
-<p>Die Miete ist monatlich im Voraus, spätestens am 3. Werktag eines jeden Monats zu zahlen.</p>
+<h2>§ 4 Miete und Zahlungsmodalitäten</h2>
+<p>Die monatliche Kaltmiete beträgt: <strong>{{kaltmiete}} Euro</strong><br>
+Zuzüglich Betriebskostenvorauszahlung: ________ Euro<br>
+<strong>Gesamtmiete: ________ Euro</strong></p>
+<p>Die Miete ist monatlich im Voraus, spätestens am 3. Werktag eines jeden Monats zu überweisen auf:</p>
+<p>Kontoinhaber: {{vermieter_name}}<br>
+IBAN: {{vermieter_iban}}<br>
+Bank: {{vermieter_bank}}</p>
 
 <h2>§ 5 Kaution</h2>
-<p>Der Mieter hinterlegt eine Kaution von <strong>{{kaution}} Euro</strong>. Die Kaution ist zu Beginn des Mietverhältnisses zu zahlen.</p>
+<p>Der Mieter hinterlegt eine Kaution von <strong>{{kaution}} Euro</strong>. Die Kaution ist zu Beginn des Mietverhältnisses zu zahlen auf:</p>
+<p>Kontoinhaber: {{vermieter_name}}<br>
+IBAN: {{vermieter_iban}}<br>
+Bank: {{vermieter_bank}}</p>
 
 <h2>§ 6 Schönheitsreparaturen</h2>
 <p>Der Mieter ist nicht verpflichtet, während der Mietzeit Schönheitsreparaturen durchzuführen.</p>
