@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
-import { DEFAULT_TEMPLATES, fillPlaceholders } from '@/lib/document-templates'
+import { DEFAULT_TEMPLATES, DEFAULT_MIETVERTRAG_SECTIONS, fillPlaceholders, type SectionsContent } from '@/lib/document-templates'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 
@@ -187,7 +187,36 @@ export async function POST(request: NextRequest) {
     effectiveName = defaultTemplateDef?.name || 'Neues Dokument'
   }
 
-  const filledContent = fillPlaceholders(rawContent, placeholders)
+  let filledContent: string
+
+  if (type === 'mietvertrag' && !template_id) {
+    // Build sections-v1 JSON for new mietvertrag documents
+    const sections = DEFAULT_MIETVERTRAG_SECTIONS.map(s => ({
+      id: crypto.randomUUID(),
+      title: s.title,
+      content: fillPlaceholders(s.content, placeholders),
+    }))
+
+    const sectionsJson: SectionsContent = {
+      format: 'sections-v1',
+      header: {
+        vermieterName: placeholders['{{vermieter_name}}'] || '',
+        vermieterFirma: placeholders['{{vermieter_firma}}'] || '',
+        vermieterAdresse: placeholders['{{vermieter_adresse}}'] || '',
+        vermieterTelefon: placeholders['{{vermieter_telefon}}'] || '',
+        vermieterEmail: placeholders['{{vermieter_email}}'] || '',
+        mieterAnrede: placeholders['{{mieter_anrede}}'] || '',
+        mieterName: `${placeholders['{{mieter_vorname}}'] || ''} ${placeholders['{{mieter_nachname}}'] || ''}`.trim(),
+        mieterAdresse: placeholders['{{mieter_adresse}}'] || '',
+        datum: placeholders['{{datum_heute}}'] || '',
+      },
+      sections,
+    }
+    filledContent = JSON.stringify(sectionsJson)
+  } else {
+    filledContent = fillPlaceholders(rawContent, placeholders)
+  }
+
   const docName = name || effectiveName
 
   const { data, error } = await supabaseAdmin.from('documents').insert({

@@ -1,4 +1,150 @@
-// Default document templates with {{placeholders}}
+// ─── Sections-v1 types & helpers ──────────────────────────────────────────────
+
+export interface ContractSection {
+  id: string
+  title: string
+  content: string
+}
+
+export interface SectionsContent {
+  format: 'sections-v1'
+  header: {
+    vermieterName: string
+    vermieterFirma: string
+    vermieterAdresse: string
+    vermieterTelefon: string
+    vermieterEmail: string
+    mieterAnrede: string
+    mieterName: string
+    mieterAdresse: string
+    datum: string
+  }
+  sections: ContractSection[]
+}
+
+export function isSectionsContent(content: string): boolean {
+  try {
+    const p = JSON.parse(content)
+    return p?.format === 'sections-v1'
+  } catch { return false }
+}
+
+export function parseSectionsContent(content: string): SectionsContent {
+  return JSON.parse(content) as SectionsContent
+}
+
+/** Convert sections JSON → full HTML string (for PDF and signing) */
+export function sectionsToHtml(parsed: SectionsContent): string {
+  const h = parsed.header
+  const headerHtml = `
+<h1>Mietvertrag über Wohnraum</h1>
+<div style="background:#FFF9E6;border-left:3px solid #C89F3E;padding:10px 14px;margin:16px 0;font-size:0.9em;">
+<strong>Hinweis:</strong> Diese Vorlage entspricht gängigen Standards für Wohnraummietverträge. Bitte vor der Unterzeichnung individuell prüfen — insb. Schönheitsreparaturen- und Kündigungsklauseln unterliegen strenger Rechtsprechung.
+</div>
+<h2>Zwischen</h2>
+<p><strong>${h.vermieterName}</strong>${h.vermieterFirma ? `, ${h.vermieterFirma}` : ''}<br>
+${h.vermieterAdresse}<br>
+${[h.vermieterTelefon ? `Telefon: ${h.vermieterTelefon}` : '', h.vermieterEmail ? `E-Mail: ${h.vermieterEmail}` : ''].filter(Boolean).join(' &nbsp;·&nbsp; ')}</p>
+<p style="text-align:center;"><em>— nachstehend "Vermieter" genannt —</em></p>
+<h2>und</h2>
+<p><strong>${h.mieterAnrede} ${h.mieterName}</strong><br>
+${h.mieterAdresse}</p>
+<p style="text-align:center;"><em>— nachstehend "Mieter" genannt —</em></p>
+<p>wird folgender Mietvertrag geschlossen:</p>
+<hr>`
+
+  const sectionsHtml = parsed.sections.map(s =>
+    `<h2>${s.title}</h2>\n${s.content}`
+  ).join('\n\n')
+
+  const footerHtml = `
+<hr>
+<p style="margin-top:24px;">Ort, Datum: _________________________, ${h.datum}</p>
+<table style="width:100%;margin-top:48px;border-collapse:collapse;">
+<tbody><tr>
+<td style="width:50%;padding:0 12px 0 0;vertical-align:top;">
+<div data-signature="vermieter" style="min-height:48px;margin-bottom:-2px;"></div>
+<p style="border-top:1px solid #222;padding-top:6px;margin-top:0;">
+<strong>Vermieter</strong><br><span style="color:#666;">${h.vermieterName}</span></p>
+</td>
+<td style="width:50%;padding:0 0 0 12px;vertical-align:top;">
+<div data-signature="mieter" style="min-height:48px;margin-bottom:-2px;"></div>
+<p style="border-top:1px solid #222;padding-top:6px;margin-top:0;">
+<strong>Mieter</strong><br><span style="color:#666;">${h.mieterAnrede} ${h.mieterName}</span></p>
+</td>
+</tr></tbody></table>`
+
+  return headerHtml + '\n' + sectionsHtml + '\n' + footerHtml
+}
+
+export const DEFAULT_MIETVERTRAG_SECTIONS: Omit<ContractSection, 'id'>[] = [
+  {
+    title: '§ 1 \u00a0 Mietobjekt',
+    content: `<p>Vermietet wird die Wohnung in:</p>
+<p style="margin-left:24px;"><strong>{{adresse}}</strong>{{lage_block}}</p>
+<p>Die Wohnung besteht aus <strong>{{zimmer}} Zimmer(n)</strong> mit einer Wohnfläche von ca. <strong>{{wohnflaeche}} m²</strong>, nebst Küche, Bad/WC, Flur sowie den mitvermieteten Nebenräumen.</p>`,
+  },
+  {
+    title: '§ 2 \u00a0 Mietzeit',
+    content: `<p>Das Mietverhältnis beginnt am <strong>{{mietbeginn}}</strong>{{vertragsdauer_block}}</p>`,
+  },
+  {
+    title: '§ 3 \u00a0 Miete und Nebenkosten',
+    content: `<table style="width:100%;border-collapse:collapse;margin:12px 0;">
+<tbody>
+<tr><td style="padding:6px 0;">Grundmiete (kalt)</td><td style="padding:6px 0;text-align:right;"><strong>{{kaltmiete}} €</strong></td></tr>
+<tr><td style="padding:6px 0;">Vorauszahlung für Betriebs- und Heizkosten</td><td style="padding:6px 0;text-align:right;"><strong>{{nebenkosten}} €</strong></td></tr>
+<tr><td style="padding:6px 0;border-top:1px solid #E6E6E6;"><strong>Gesamtmiete monatlich</strong></td><td style="padding:6px 0;text-align:right;border-top:1px solid #E6E6E6;"><strong>{{gesamtmiete}} €</strong></td></tr>
+</tbody></table>
+<p>Die Miete ist monatlich im Voraus, spätestens am <strong>{{faelligkeitstag}}. Werktag</strong> eines jeden Monats, kostenfrei für den Vermieter auf folgendes Konto zu zahlen:</p>
+<p style="margin-left:24px;">Kontoinhaber: <strong>{{vermieter_name}}</strong><br>IBAN: {{vermieter_iban}}<br>Bank: {{vermieter_bank}}</p>
+<p>Die Betriebskostenvorauszahlung wird jährlich abgerechnet (§§ 556 ff. BGB).</p>`,
+  },
+  {
+    title: '§ 4 \u00a0 Kaution',
+    content: `<p>Der Mieter leistet zur Sicherung aller Ansprüche des Vermieters eine Barkaution in Höhe von <strong>{{kaution}} €</strong>.</p>
+<p>Die Kaution ist gemäß § 551 BGB in drei gleichen Raten zulässig; die erste Rate wird zu Mietbeginn fällig. Der Vermieter legt die Kaution insolvenzsicher und getrennt von seinem Vermögen zu einem für Spareinlagen üblichen Zinssatz an. Zinsen stehen dem Mieter zu.</p>`,
+  },
+  {
+    title: '§ 5 \u00a0 Übergabe und Zustand der Mietsache',
+    content: `<p>Die Wohnung wird im beiderseits besichtigten Zustand übergeben. Über den Zustand zum Zeitpunkt der Übergabe wird ein gesondertes <strong>Übergabeprotokoll</strong> angefertigt, das Bestandteil dieses Vertrages ist.</p>`,
+  },
+  {
+    title: '§ 6 \u00a0 Nutzung der Mietsache',
+    content: `<p>(1) Die Wohnung darf ausschließlich zu Wohnzwecken genutzt werden. Eine gewerbliche oder freiberufliche Nutzung bedarf der schriftlichen Zustimmung des Vermieters.</p>
+<p>(2) Die Untervermietung oder sonstige Gebrauchsüberlassung an Dritte bedarf der vorherigen schriftlichen Zustimmung des Vermieters. Auf § 553 BGB wird hingewiesen.</p>
+<p>(3) Die Tierhaltung richtet sich nach den gesetzlichen Bestimmungen; die Haltung größerer Tiere (insb. Hunde, Katzen) bedarf der schriftlichen Zustimmung des Vermieters.</p>`,
+  },
+  {
+    title: '§ 7 \u00a0 Instandhaltung, Schönheitsreparaturen',
+    content: `<p>(1) Der Mieter verpflichtet sich, die Mietsache pfleglich zu behandeln und kleine Instandhaltungen bis zu einer Höhe von 100 € je Einzelfall, höchstens jedoch 8 % der Jahreskaltmiete, zu übernehmen.</p>
+<p>(2) Schönheitsreparaturen während der Mietzeit werden nicht übertragen. Maßgeblich ist die aktuelle Rechtsprechung des BGH.</p>`,
+  },
+  {
+    title: '§ 8 \u00a0 Kündigung',
+    content: `<p>(1) Das Mietverhältnis kann unter Einhaltung der gesetzlichen Kündigungsfristen (§ 573c BGB) ordentlich gekündigt werden. Für den Mieter beträgt die Kündigungsfrist <strong>{{kuendigungsfrist}}</strong>.</p>
+<p>(2) Die Kündigung bedarf der Schriftform.</p>
+<p>(3) Das Recht zur außerordentlichen Kündigung bleibt unberührt.</p>`,
+  },
+  {
+    title: '§ 9 \u00a0 Hausordnung',
+    content: `<p>Der Mieter verpflichtet sich, die Hausordnung einzuhalten, soweit sie diesem Vertrag beigefügt oder im Hause ausgehängt ist. Rücksichtnahme auf Mitbewohner, insbesondere während der gesetzlichen Ruhezeiten, ist selbstverständlich.</p>`,
+  },
+  {
+    title: '§ 10 \u00a0 Sonstige Vereinbarungen',
+    content: `<p style="color:#888;"><em>Platz für individuelle Abreden:</em></p>
+<p>_________________________________________________________________</p>
+<p>_________________________________________________________________</p>`,
+  },
+  {
+    title: '§ 11 \u00a0 Schlussbestimmungen',
+    content: `<p>(1) Mündliche Nebenabreden wurden nicht getroffen. Änderungen und Ergänzungen dieses Vertrages bedürfen der Schriftform.</p>
+<p>(2) Sollte eine Bestimmung dieses Vertrages ganz oder teilweise unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.</p>
+<p>(3) Gerichtsstand ist der Sitz der Mietsache.</p>`,
+  },
+]
+
+// ─── Default document templates with {{placeholders}} ─────────────────────────
 // Placeholders: {{vermieter_name}}, {{vermieter_firma}}, {{vermieter_adresse}},
 // {{vermieter_strasse}}, {{vermieter_plz_ort}}, {{vermieter_telefon}}, {{vermieter_email}},
 // {{vermieter_iban}}, {{vermieter_bank}},

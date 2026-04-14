@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DocumentEditor } from '@/components/DocumentEditor'
 import { SignDialog, type SignResult } from '@/components/documents/SignDialog'
+import { SectionsDocumentEditor } from '@/components/documents/SectionsDocumentEditor'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Save, Download, CheckCircle2, FileText,
@@ -17,7 +18,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
-import { PLACEHOLDER_LABELS } from '@/lib/document-templates'
+import { PLACEHOLDER_LABELS, isSectionsContent, parseSectionsContent, sectionsToHtml, type SectionsContent } from '@/lib/document-templates'
 
 const TYPE_LABELS: Record<string, string> = {
   wohnungsgeberbestaetigung: 'Wohnungsgeberbestätigung',
@@ -43,6 +44,7 @@ export default function DocumentPage() {
   const [tplName, setTplName] = useState('')
   const [savingTpl, setSavingTpl] = useState(false)
   const [signOpen, setSignOpen] = useState(false)
+  const [parsedSections, setParsedSections] = useState<SectionsContent | null>(null)
 
   useEffect(() => {
     if (!user) { router.replace('/login'); return }
@@ -56,6 +58,9 @@ export default function DocumentPage() {
         setDoc(document)
         setName(document.name)
         setContent(document.content)
+        if (isSectionsContent(document.content)) {
+          setParsedSections(parseSectionsContent(document.content))
+        }
         setLoading(false)
       })
       .catch(() => {
@@ -66,7 +71,10 @@ export default function DocumentPage() {
 
   const save = useCallback(async (opts?: { finalize?: boolean; contentOverride?: string; signatures?: any; signatureMode?: string }) => {
     setSaving(true)
-    const updates: any = { name, content: opts?.contentOverride ?? content }
+    const currentContent = parsedSections
+      ? (opts?.contentOverride ?? JSON.stringify(parsedSections))
+      : (opts?.contentOverride ?? content)
+    const updates: any = { name, content: currentContent }
     if (opts?.finalize) {
       updates.status = 'final'
       updates.finalized_at = new Date().toISOString()
@@ -97,7 +105,7 @@ export default function DocumentPage() {
       toast.error('Fehler beim Speichern')
     }
     setSaving(false)
-  }, [id, name, content])
+  }, [id, name, content, parsedSections])
 
   /** Embeds signature images into the HTML content at markers like <div data-signature="vermieter"> */
   const embedSignatures = (html: string, sigs: Record<string, string>): string => {
@@ -118,8 +126,10 @@ export default function DocumentPage() {
       return
     }
     // Digital: embed images into content
+    // For sections-format documents, convert to HTML first before embedding signatures
+    const workingContent = parsedSections ? sectionsToHtml(parsedSections) : content
     const signedAt = new Date().toISOString()
-    const newContent = embedSignatures(content, result.signatures)
+    const newContent = embedSignatures(workingContent, result.signatures)
     const meta = Object.keys(result.signatures).reduce<Record<string, any>>((acc, key) => {
       acc[key] = { signed_at: signedAt }
       return acc
@@ -157,9 +167,11 @@ export default function DocumentPage() {
       await save()
 
       const html2pdf = (await import('html2pdf.js')).default
+      // Convert sections to HTML for PDF if needed
+      const htmlForPdf = parsedSections ? sectionsToHtml(parsedSections) : content
       const container = document.createElement('div')
       container.style.cssText = 'width:210mm;padding:20mm;font-family:"Geist Variable",Helvetica,Arial,sans-serif;font-size:11pt;line-height:1.65;color:#1c1917;background:#fff'
-      container.innerHTML = content
+      container.innerHTML = htmlForPdf
 
       const style = document.createElement('style')
       style.textContent = `
@@ -368,18 +380,43 @@ export default function DocumentPage() {
                 }}
               />
 
-              {isFinalized ? (
-                <div
-                  className="prose prose-stone prose-sm max-w-none px-10 md:px-16 py-12 md:py-14 relative"
-                  dangerouslySetInnerHTML={{ __html: content }}
-                />
+              {parsedSections ? (
+                // New sections-based editor for mietvertrag
+                isFinalized ? (
+                  // Finalized: render sections as read-only HTML
+                  <div className="px-4 sm:px-6 md:px-10 py-8 md:py-12 relative">
+                    <div
+                      className="prose prose-stone prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: sectionsToHtml(parsedSections) }}
+                    />
+                  </div>
+                ) : (
+                  <div className="px-4 sm:px-6 py-6">
+                    <SectionsDocumentEditor
+                      parsed={parsedSections}
+                      isFinalized={isFinalized}
+                      onChange={(updated) => {
+                        setParsedSections(updated)
+                        setIsDirty(true)
+                      }}
+                    />
+                  </div>
+                )
               ) : (
-                <div className="relative">
-                  <DocumentEditor
-                    content={content}
-                    onChange={(html) => { setContent(html); setIsDirty(true) }}
+                // Legacy HTML editor
+                isFinalized ? (
+                  <div
+                    className="prose prose-stone prose-sm max-w-none px-10 md:px-16 py-12 md:py-14 relative"
+                    dangerouslySetInnerHTML={{ __html: content }}
                   />
-                </div>
+                ) : (
+                  <div className="relative">
+                    <DocumentEditor
+                      content={content}
+                      onChange={(html) => { setContent(html); setIsDirty(true) }}
+                    />
+                  </div>
+                )
               )}
             </div>
 
