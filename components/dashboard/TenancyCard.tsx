@@ -213,7 +213,7 @@ export function TenancyCard({ group, userId, onDelete, onDuplicate, onAuszugCrea
 
   return (
     <article
-      className="group/card relative flex flex-col rounded-2xl border border-border bg-card shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer overflow-hidden"
+      className="group/card relative flex flex-col rounded-2xl border border-border bg-card shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
       onClick={() => onOpenTenancy(group)}
     >
       {/* Top accent strip */}
