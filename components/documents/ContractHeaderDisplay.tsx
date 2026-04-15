@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import type { SectionsContent } from '@/lib/document-templates'
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
   className?: string
 }
 
-export function ContractHeaderDisplay({ header: h, className }: Props) {
+export const ContractHeaderDisplay = memo(function ContractHeaderDisplay({ header: h, className }: Props) {
   return (
     <div className={className}>
       {/* Title */}
@@ -15,15 +16,6 @@ export function ContractHeaderDisplay({ header: h, className }: Props) {
         <h1 className="font-heading text-xl font-semibold tracking-tight uppercase text-foreground">
           Mietvertrag über Wohnraum
         </h1>
-      </div>
-
-      {/* Legal notice */}
-      <div className="bg-amber-50 dark:bg-amber-950/30 border-l-[3px] border-amber-400 px-4 py-3 mb-6 rounded-r-lg">
-        <p className="text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
-          <strong>Hinweis:</strong> Diese Vorlage entspricht gängigen Standards für Wohnraummietverträge.
-          Bitte vor der Unterzeichnung individuell prüfen — insb. Schönheitsreparaturen- und
-          Kündigungsklauseln unterliegen strenger Rechtsprechung.
-        </p>
       </div>
 
       {/* Vermieter */}
@@ -72,4 +64,4 @@ export function ContractHeaderDisplay({ header: h, className }: Props) {
       </p>
     </div>
   )
-}
+})

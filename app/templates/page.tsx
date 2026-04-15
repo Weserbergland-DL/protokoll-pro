@@ -24,6 +24,7 @@ const TYPE_META: Record<string, { label: string; icon: React.ElementType; color:
   wohnungsgeberbestaetigung: { label: 'Wohnungsgeberbestätigung',  icon: Home,          color: 'text-ink-700 bg-ink-50' },
   kautionsbescheinigung:     { label: 'Kautionsbescheinigung',     icon: Key,           color: 'text-emerald-700 bg-emerald-50' },
   sonstiges:                 { label: 'Sonstiges',                 icon: FileText,      color: 'text-muted-foreground bg-muted' },
+  contract_section:          { label: 'Vertragsabschnitt',         icon: Bookmark,      color: 'text-stone-700 bg-stone-100' },
 }
 
 export default function TemplatesPage() {
