@@ -354,9 +354,13 @@ function HowItWorks() {
             {steps.map((s) => (
               <RevealItem key={s.n} className="relative group">
                 <div className="h-full rounded-2xl border border-border bg-card p-7 shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-                  <span className="font-heading text-[40px] text-brass-400/80 dark:text-brass-500/70 leading-none">{s.n}</span>
-                  <div className="mt-5 h-11 w-11 rounded-xl bg-ink-50 dark:bg-ink-800/40 flex items-center justify-center">
-                    <s.icon className="h-5 w-5 text-ink-700 dark:text-brass-300" />
+                  {/* Nummer + Icon auf derselben Zeile — vorher gestapelt, auf
+                      Mobile sah das nach unnötigem Leerraum aus. */}
+                  <div className="flex items-center gap-4">
+                    <span className="font-heading text-[40px] text-brass-400/80 dark:text-brass-500/70 leading-none">{s.n}</span>
+                    <div className="h-11 w-11 rounded-xl bg-ink-50 dark:bg-ink-800/40 flex items-center justify-center shrink-0">
+                      <s.icon className="h-5 w-5 text-ink-700 dark:text-brass-300" />
+                    </div>
                   </div>
                   <h3 className="mt-5 font-heading text-xl text-foreground">{s.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.desc}</p>

@@ -411,8 +411,8 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Bento stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-10">
+        {/* Bento stats — auf Mobile untereinander (ein-Spalten-Stack statt 2+1-Asymmetrie) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
           <StatCard
             label="Mietverhältnisse"
             value={stats.total}
@@ -437,7 +437,7 @@ export default function Dashboard() {
             icon={CircleCheck}
             tone="emerald"
             loading={loading}
-            className="col-span-2 sm:col-span-1 motion-fade-up"
+            className="motion-fade-up"
             style={{ '--stagger-i': 2 } as React.CSSProperties}
           />
         </div>

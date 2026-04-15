@@ -357,6 +357,63 @@
   height: 0;
 }
 
+/* ===== Finalisierte Mietvertrag-Ansicht (Browser) =====
+   Die CSS-Regeln in lib/document-pdf.ts greifen nur im PDF (Puppeteer).
+   Für die HTML-Ansicht im Browser (DocumentPaper, dangerouslySetInnerHTML)
+   brauchen wir eigene Regeln, da Tailwind die Klassen nicht indexieren
+   kann und .prose sie nicht deckt.
+*/
+.prose .contract-signatures {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.prose .contract-signature-cell {
+  width: 50%;
+  vertical-align: top;
+  padding: 0 12px;
+}
+.prose .contract-signature-cell:first-child {
+  padding-left: 0;
+}
+.prose .contract-signature-cell:last-child {
+  padding-right: 0;
+}
+.prose .contract-signature-pad {
+  min-height: 48px;
+}
+.prose .contract-signature-line {
+  border-top: 1px solid rgba(0, 0, 0, 0.5);
+  padding-top: 6px;
+  margin-top: 4px;
+}
+.prose .contract-signature-role {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.2;
+}
+.prose .contract-signature-name {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Ort, Datum — Komma bleibt zusammen mit dem Ort-Blank (kein Zeilenumbruch davor) */
+.prose .contract-date-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.25rem;
+}
+.prose .contract-date-ort {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
 /* Motion-reduced: kill non-essential transforms */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

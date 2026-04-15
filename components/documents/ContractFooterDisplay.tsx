@@ -18,11 +18,18 @@ export const ContractFooterDisplay = memo(function ContractFooterDisplay({ heade
 
   return (
     <div className={className}>
-      {/* Ort, Datum line */}
-      <p className="text-sm text-foreground mb-10">
-        <span>Ort, Datum:&nbsp;&nbsp;</span>
-        <FillOrLine value={ort} minWidth="10rem" />
-        <span className="mx-1">,</span>
+      {/*
+        Ort, Datum line — auf Mobile umbricht die inline Zeile sonst zwischen
+        ort-Blank und Komma, sodass ", 15.04.2026" eine neue Zeile beginnt.
+        Lösung: flex mit items-baseline + flex-wrap, und den Ort zusammen mit
+        seinem Komma in einer nowrap-Gruppe zusammenhalten.
+      */}
+      <p className="text-sm text-foreground mb-10 flex flex-wrap items-baseline gap-x-1">
+        <span>Ort, Datum:</span>
+        <span className="inline-flex items-baseline whitespace-nowrap">
+          <FillOrLine value={ort} minWidth="10rem" />
+          <span className="ml-1">,</span>
+        </span>
         <FillOrLine value={datum} minWidth="6rem" />
       </p>
 

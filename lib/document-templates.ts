@@ -115,7 +115,7 @@ ${rest}
 
   const footerHtml = `
 <section class="contract-footer">
-<p class="contract-date-line">Ort, Datum:&nbsp;&nbsp;${ort ? `<strong>${ort}</strong>` : blankLine('10rem')}<span class="contract-date-sep">,</span>&nbsp;${datum ? `<strong>${datum}</strong>` : blankLine('6rem')}</p>
+<p class="contract-date-line">Ort, Datum:&nbsp;&nbsp;<span class="contract-date-ort">${ort ? `<strong>${ort}</strong>` : blankLine('10rem')}<span class="contract-date-sep">,</span></span>&nbsp;${datum ? `<strong>${datum}</strong>` : blankLine('6rem')}</p>
 <table class="contract-signatures"><tbody><tr>
 <td class="contract-signature-cell">
 <div data-signature="vermieter" class="contract-signature-pad"></div>

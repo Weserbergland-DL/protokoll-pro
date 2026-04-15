@@ -413,12 +413,18 @@ const SectionCard = memo(function SectionCard({
           />
         )}
 
-        {/* Save as template */}
+        {/*
+          BookmarkPlus + Trash belegen auf Mobile (~375px) zu viel Platz neben dem
+          Title-Input, sodass Titel wie "Übergabe und Zustand der Mietsache" mitten
+          im Wort abgeschnitten werden. Lösung: beide Buttons nur ab sm: (≥640px)
+          in der Headerzeile zeigen. Auf Mobile erscheinen sie im Card-Body
+          (weiter unten), sobald der Abschnitt expandiert ist.
+        */}
         {!isFinalized && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 shrink-0 text-muted-foreground/60 hover:text-foreground"
+            className="hidden sm:inline-flex h-7 w-7 shrink-0 text-muted-foreground/60 hover:text-foreground"
             onClick={e => { e.stopPropagation(); onSaveAsTemplate(section) }}
             aria-label="Als Vorlage speichern"
             title="Als Vorlage speichern"
@@ -440,12 +446,12 @@ const SectionCard = memo(function SectionCard({
           }
         </button>
 
-        {/* Delete */}
+        {/* Delete — auf Mobile erst im expandierten Body sichtbar (siehe unten) */}
         {!isFinalized && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 shrink-0 text-muted-foreground/60 hover:text-destructive"
+            className="hidden sm:inline-flex h-7 w-7 shrink-0 text-muted-foreground/60 hover:text-destructive"
             onClick={e => { e.stopPropagation(); onDelete(section.id) }}
             aria-label="Abschnitt löschen"
           >
@@ -464,6 +470,35 @@ const SectionCard = memo(function SectionCard({
             />
           ) : (
             <EditorWrapper sectionId={section.id} content={section.content} onChangeContent={onChangeContent} />
+          )}
+
+          {/*
+            Mobile-Aktionsleiste: BookmarkPlus + Trash werden auf Mobile im
+            Header ausgeblendet (Platz für den Titel) und erscheinen stattdessen
+            unten im expandierten Body. Ab sm: (≥640px) passt alles oben,
+            deshalb hier ausblenden.
+          */}
+          {!isFinalized && (
+            <div className="sm:hidden flex items-center justify-end gap-1 border-t border-border px-3 py-2 bg-muted/20">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+                onClick={() => onSaveAsTemplate(section)}
+              >
+                <BookmarkPlus className="h-3.5 w-3.5" />
+                Als Vorlage
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-xs text-muted-foreground hover:text-destructive gap-1.5"
+                onClick={() => onDelete(section.id)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Abschnitt löschen
+              </Button>
+            </div>
           )}
         </div>
       )}
