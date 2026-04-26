@@ -7,17 +7,10 @@ coverage/
 *.log
 .env*
 !.env.example
-!.env.local.example
-_src_old/
-
-# Temporäres Bug-Reporting-Verzeichnis (siehe TEST_AGENT_PROMPT.md)
-.bugs/
+!.env.production
 
 # TypeScript incremental build cache
 tsconfig.tsbuildinfo
-
-# Lokale Remotion-Renderings (MP4 etc. — nicht in Git)
-remotion/
 
 # Claude Code local config / settings (never commit)
 .claude/
